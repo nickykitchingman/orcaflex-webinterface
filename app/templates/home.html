@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+<div>
+  <h1>OrcaFlex</h1>
+  <h2>Welcome to the OrcaFlex web interface</h2>
+
+  <div class="container">
+    <h1>File Submission Portal</h1>
+    <form id="file-form">
+      <input type="file" id="file" name="file">
+      <input type="submit" value="Submit File">
+    </form>
+    <div id="message"></div>
+  </div>
+</div>
+{% endblock %}

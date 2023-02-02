@@ -1,0 +1,13 @@
+# database
+*.db
+migrations/
+
+# cache
+__pycache__/
+tmp/
+app/__pycache__/
+# vscode
+.vscode/
+
+# logs
+*.log*
