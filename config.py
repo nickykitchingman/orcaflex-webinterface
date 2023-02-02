@@ -12,3 +12,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     POSTS_PER_PAGE = 6
+    
+    FILES_FOLDER = r'files'
+    UPLOAD_FOLDER = r'upload'
+    DOWNLOAD_FOLDER = r'download'

@@ -5,7 +5,7 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-CORS(app)
+CORS(app, expose_headers=["Content-Disposition"])
 api = Api(app)
 
 from app import models, routes, auth, errors

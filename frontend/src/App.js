@@ -30,8 +30,11 @@ const FileSubmission = () => {
         method: 'POST',
         body: formData
       });
-      const data = await response.json();
-      setMessage(data.message);
+      const blob = await response.blob();
+      var file = await window.URL.createObjectURL(blob);
+      window.location.assign(file);
+      //const data = await response.json();
+      setMessage('Files processed successfully');
     } catch (error) {
       setMessage('An error occurred. Please try again.');
     }
