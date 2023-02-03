@@ -1,0 +1,10 @@
+li {
+    display:inline;
+    margin: 5rem;
+    font-size: 3rem;
+}
+
+div.break {
+    height: 1px; 
+    background-color: #999999;
+}
