@@ -11,6 +11,5 @@ api = Api(app)
 from app import models, routes, auth, errors
 
 app.register_blueprint(auth.bp)
-app.add_url_rule('/', endpoint='index')
 
 api.add_resource(routes.FileSubmission, '/files')

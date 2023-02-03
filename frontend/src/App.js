@@ -18,26 +18,29 @@ const FileSubmission = () => {
     e.preventDefault();
     const files = e.target.elements['file'].files;
     const formData = new FormData();
+    if (files.length === 0) {
+      setMessage("Please select a file.");
+      return;    
+    }
     for (let i = 0; i < files.length; i++) {
       if (!checkValid(files[i].name)) {
         return;
       }
       formData.append('files', files[i]);
     }
-    try {
-      setMessage('Uploading...')
-      const response = await fetch('http://localhost:5000/files', {
-        method: 'POST',
-        body: formData
-      });
-      const blob = await response.blob();
-      var file = await window.URL.createObjectURL(blob);
-      window.location.assign(file);
-      //const data = await response.json();
-      setMessage('Files processed successfully');
-    } catch (error) {
-      setMessage('An error occurred. Please try again.');
-    }
+    setMessage('Uploading...')
+    fetch('http://localhost:5000/files', {
+      method: 'POST',
+      body: formData
+    }).then(
+      response => response.blob()).then(
+      blob => window.URL.createObjectURL(blob)).then(
+      file => { 
+        window.location.assign(file);
+        setMessage('Files processed successfully');
+      }).catch(
+        error => setMessage('An error occurred. Please try again.')
+    );
   };
 
   return (
