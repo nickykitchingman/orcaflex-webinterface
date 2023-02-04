@@ -1,3 +1,48 @@
 li.vertical {
+    display: block;    
+}
+
+table {
+    border-spacing: 0;
+}
+
+td {
+    padding: 1rem 0;
+}
+
+.job-table {
+    padding: 0 15%;
+}
+
+.process-btn {
+    background-color: var(--color-1-light);
+    border: none;
+    color: var(--color-2-dark);
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 20px;
     display: block;
+}
+
+.process-btn:hover {
+    background-color: var(--color-1-lighter);
+    color: var(--color-2-darker);
+}
+
+.process-col {
+    width: 95%;
+}
+
+.download-btn {
+    background-color: var(--color-2-lighter);
+    border: none;
+    color: var(--color-white);
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 20px;
+    display: block;
+}
+
+.download-btn:hover {
+    background-color: var(--color-2-light);
 }
