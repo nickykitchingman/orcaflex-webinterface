@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { trackPromise } from 'react-promise-tracker';
+
+import Loading from '../components/Loading';
 
 const Upload = () => {
     const [message, setMessage] = useState('');
@@ -30,20 +33,22 @@ const Upload = () => {
             }
             formData.append('files', files[i]);
         }
-        setMessage('Uploading...')
-        fetch('http://localhost:5000/files', {
-            method: 'POST',
-            body: formData
-        }).then(
-            response => {
-                setMessage('Files uploaded successfully');
-                navigate('/process');
-            }
-        ).catch(
-            error => {
-                setMessage('An error occurred. Please try again.');
-                console.log(error);
-            }
+        setMessage('');
+        trackPromise(
+            fetch('http://localhost:5000/files', {
+                method: 'POST',
+                body: formData
+            }).then(
+                response => {
+                    setMessage('Files uploaded successfully');
+                    navigate('/process');
+                }
+            ).catch(
+                error => {
+                    setMessage('An error occurred. Please try again.');
+                    console.log(error);
+                }
+            )
         );
     };
 
@@ -56,6 +61,7 @@ const Upload = () => {
                 <div className="space-1"></div>
                 <input type="submit" value="Upload" />
             </form>
+            <Loading />
             <div id="message">{message}</div>
         </div>
     );

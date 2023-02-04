@@ -15,9 +15,9 @@ td {
 }
 
 .process-btn {
-    background-color: var(--color-1-light);
+    background-color: var(--color-1-lighter);
+    color: var(--color-2-darker);
     border: none;
-    color: var(--color-2-dark);
     padding: 12px 20px;
     cursor: pointer;
     font-size: 20px;
@@ -25,8 +25,8 @@ td {
 }
 
 .process-btn:hover {
-    background-color: var(--color-1-lighter);
-    color: var(--color-2-darker);
+    background-color: var(--color-1-light);
+    color: var(--color-gray-10);
 }
 
 .process-col {

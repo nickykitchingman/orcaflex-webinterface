@@ -108,12 +108,12 @@
 
     /* theme color variations
      */
-    --color-1-lightest             : hsla(19, 89%, 84%, 1);
-    --color-1-lighter              : hsla(19, 89%, 74%, 1);
-    --color-1-light                : hsla(19, 89%, 64%, 1);
-    --color-1-dark                 : hsla(19, 89%, 44%, 1);
-    --color-1-darker               : hsla(19, 89%, 34%, 1);
-    --color-1-darkest              : hsla(19, 89%, 24%, 1);
+    --color-1-lightest             : #E5E6E7;
+    --color-1-lighter              : #C5C6C7;
+    --color-1-light                : #758487;
+    --color-1-dark                 : #65747B;
+    --color-1-darker               : #1F2833;
+    --color-1-darkest              : #0B0C10;
     --color-2-lightest             : hsla(179, 94%, 49%, 1);
     --color-2-lighter              : hsla(179, 94%, 39%, 1);
     --color-2-light                : hsla(179, 94%, 29%, 1);
