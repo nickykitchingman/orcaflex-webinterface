@@ -1,19 +1,36 @@
 # OrcaFlex web interface
 
-# To run:
+## Setup
 
-#
+Create a virtual environment (venv)\
+Navigate to *root*
 
-# Start a virtual environment
+```
+pip install -r requirements.txt
+flask db migrate
+flask db upgrade
+```
 
-#
+Install **NodeJS**\
+Navigate to *root/frontend*
 
-# If this is the first time, run
+```
+npm install package
+```
 
-# pip install -r requirements.txt
+## Launch
 
-#
+### Open two terminals
 
-# Then run
+Navigate to *root*
 
-# flask run
+#### Terminal 1
+```
+flask --debug run
+```
+
+#### Terminal 2
+```
+cd frontend
+npm start
+```
