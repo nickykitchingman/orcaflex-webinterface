@@ -20,6 +20,14 @@ class ProcessJob(Resource):
         sim = api.process_job(job)
         return jsonify({'job': sim.get_dict()})
 
+class ProcessJobs(Resource):
+    def post(self):
+        content = request.json
+        jobs = content['jobs']
+        sims = api.process_jobs(jobs)
+        dicts = [sim.get_dict() for sim in sims]
+        return jsonify({'jobs': dicts})
+
 class DownloadJob(Resource):
     def post(self):
         content = request.json
@@ -28,3 +36,13 @@ class DownloadJob(Resource):
         
         if path is not None:
             return send_file(path, as_attachment=True, download_name=filename)
+
+class ClearJobs(Resource):
+    def get(self):
+        filing.clear_jobs()
+
+class StopJobs(Resource):
+    def post(self):
+        content = request.json
+        job_ids = content['jobs']
+        api.stop_jobs(job_ids)

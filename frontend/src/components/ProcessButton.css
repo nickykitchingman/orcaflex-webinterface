@@ -1,0 +1,19 @@
+.process-btn {
+    background-color: var(--color-1-lighter);
+    color: var(--color-2-darker);
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center; 
+}
+
+.status-symbol {
+    float: right;
+    margin-left: auto;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;    
+}

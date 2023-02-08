@@ -67,5 +67,25 @@ def get_sim_path(job_id):
     if job is None or job.status != JobStatus.Complete:
         return None
     
-    path = os.path.join(SAVE_PATH, job.sim_filename)
-    return path, job.sim_filename
+    path = os.path.join(SAVE_PATH, job.sim_filename())
+    return path, job.sim_filename()
+
+def clear_jobs():
+    for job in Job.query.all():
+        if job.status == JobStatus.Running:
+            continue
+    
+        # Check if a duplicate job uses this filename
+        if Job.query.filter(Job.id != job.id, Job.filename == job.filename).first() is None:
+            load_file = os.path.join(LOAD_PATH, job.full_filename())
+            save_file = os.path.join(SAVE_PATH, job.sim_filename())
+            try:
+                if job.filename != '':
+                    os.remove(load_file)
+                if job.sim_filename() != '':
+                    os.remove(save_file)
+            except OSError:
+                pass  # Its okay for the files not to exist
+            
+        db.session.delete(job)
+        db.session.commit()

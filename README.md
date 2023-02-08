@@ -2,8 +2,8 @@
 
 ## Setup
 
-Create a virtual environment (venv)\
-Navigate to *root*
+Create a virtual environment (venv)  
+Navigate to *root*  
 
 ```
 pip install -r requirements.txt
@@ -11,8 +11,8 @@ flask db migrate
 flask db upgrade
 ```
 
-Install **NodeJS**\
-Navigate to *root/frontend*
+Install **NodeJS**  
+Navigate to *root/frontend*  
 
 ```
 npm install package

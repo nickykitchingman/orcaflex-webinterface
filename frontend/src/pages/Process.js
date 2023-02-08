@@ -3,9 +3,9 @@ import './Process.css';
 import 'font-awesome/css/font-awesome.min.css';
 import { trackPromise } from 'react-promise-tracker';
 
-import LoadingSpinner from '../components/LoadingSpinner';
-import StatusSymbol from '../components/StatusSymbol';
+import ProcessButton from '../components/ProcessButton';
 import DownloadButton from '../components/DownloadButton';
+import ProcessPanel from '../components/ProcessPanel';
 
 const Process = () => {
     
@@ -15,9 +15,20 @@ const Process = () => {
         setJobs(jobs.map(job => job.id == newJob.id ? newJob: job));
     }
     
-    const setUnprocessed = id => {
-        setJobs(jobs.map(job => job.id == id ? { ...job, status: 1 }: job));
+    const updateJobs = newJobs => {
+        const chooseJob = (job, newJob) => newJob ? newJob : job;        
+        setJobs(jobs.map(job => chooseJob(newJobs.find(newJob => newJob.id == job.id), job)));
+    } 
+    
+    const setFailed = ids => {
+        setJobs(jobs.map(job => ids.includes(job.id) ? { ...job, status: 3 } : job));
+    }    
+    
+    const setRunning = ids => {
+        setJobs(jobs.map(job => ids.includes(job.id) ? { ...job, status: 1 } : job));
     }
+    
+    const runningJobs = () => jobs.filter(job => job.status == 1);
     
     const findJob = id => jobs.find(job => job.id == id);
    
@@ -38,23 +49,69 @@ const Process = () => {
         );
     }
     
-    const processJob = job => {        
-        setUnprocessed(job);
-        trackPromise(
-            fetch(
-                'http://localhost:5000/processjob',
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json',},
-                    body: JSON.stringify({'job': job})
-                }
-            ).then(
-                response => checkStatus(response).json()).then(
-                data => updateJob(data.job)).catch(
-                error => console.error(error)
-            ),
-            `process-job-${job}`
+    const processJob = jobId => {  
+        const job = findJob(jobId);
+        if (job.status == 1) {
+            return;
+        }
+        setRunning([jobId]);
+        fetch(
+            'http://localhost:5000/processjob',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json',},
+                body: JSON.stringify({'job': jobId})
+            }
+        ).then(
+            response => checkStatus(response).json()
+        ).catch(
+            error => {
+                setFailed([jobId]);
+                console.error(error);
+            }
         );
+    }
+    
+    const runSome = ids => {
+        if (ids.length == 0) {
+            return;
+        }
+        setRunning(ids);
+        fetch(
+            'http://localhost:5000/processjobs',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json',},
+                body: JSON.stringify({'jobs': ids})
+            }
+        ).then(
+            response => checkStatus(response).json()
+        ).catch(
+            error => {
+                console.error(error);
+                setFailed([ids]);
+            }
+        )
+    }
+    
+    const runAll = () => {
+        let readyJobs = [];
+        jobs.forEach(job => {
+            if (job.status != 1) {
+                readyJobs.push(job.id);
+            }
+        });
+        runSome(readyJobs);
+    }
+    
+    const runPending = () => {
+        let pendingJobs = [];
+        jobs.forEach(job => {
+            if (job.status == 0) {
+                pendingJobs.push(job.id);
+            }
+        });
+        runSome(pendingJobs);
     }
     
     const downloadJob = jobId => trackPromise(
@@ -66,34 +123,64 @@ const Process = () => {
                 body: JSON.stringify({'job': jobId})
             }
         ).then(
-            response => checkStatus(response).blob()).then(
+            response => checkStatus(response).blob()
+        ).then(
             blob => {
                 let url = window.URL.createObjectURL(blob);
                 let job = findJob(jobId);
                 if (job) {
                     let a = document.createElement('a');
                     a.href = url;
-                    a.download = job.sim_filename;
+                    a.download = `${job.filename}.sim`;
                     a.click();
                     window.URL.revokeObjectURL(url);
                     a.remove();
                 }
-        }).catch(
+            }
+        ).catch(
            error => console.error(error)
         ), `download-${jobId}`
     );
     
-    useEffect(() => {
-        fetchJobs();
-    }, []);
+    const clearJobs = () => {        
+        fetch(
+            'http://localhost:5000/clearjobs'
+        ).then(
+            response => {
+                checkStatus(response);
+                setJobs(runningJobs());
+            }
+        ).catch(
+            error => console.error(error)
+        );
+    };
+    
+    const stopJobs = () => {    
+        let jobIds = runningJobs().map(job => job.id);
+        if (jobs.length == 0) {
+            return;
+        }
+        
+        fetch(
+            'http://localhost:5000/stopjobs',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json',},
+                body: JSON.stringify({'jobs': jobIds})
+            }
+        ).then(
+            response => {
+                checkStatus(response);
+            }
+        ).catch(
+            error => console.error(error)
+        );
+    };
 
     const displayJob = job => (
         <tr key={job.id}>
             <td className="process-col" colSpan={job.status==2?"1":"2"}>
-                <a className="process-btn" onClick={() => processJob(job.id)}>
-                    <div>{job.filename}</div>
-                    <div className="status-symbol" ><StatusSymbol symbol={job.status}/></div>
-                </a>
+                <ProcessButton onClick={() => processJob(job.id)} job={job}/>
             </td>
             {job.status == 2 &&
             (<td className="download-col">
@@ -103,11 +190,21 @@ const Process = () => {
     );   
     
     const displayJobs = (<table><tbody>{jobs.map((job) => displayJob(job))}</tbody></table>);
+    
+    const STATUS_UPDATE_INTERVAL = 2000;
+    
+    useEffect(() => {
+        fetchJobs();
+        
+        const interval = setInterval(fetchJobs, STATUS_UPDATE_INTERVAL);
+        
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div id="process-page">      
             <h1>Process jobs</h1>            
-            <div className="space-1"></div>
+            <ProcessPanel onClear={clearJobs} onStop={stopJobs} onRunPending={runPending} onRunAll={runAll}/>
             <div className="job-table">{displayJobs}</div>
             <div className="space-1"></div>
         </div>

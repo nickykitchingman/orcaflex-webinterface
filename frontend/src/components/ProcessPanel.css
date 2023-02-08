@@ -1,0 +1,16 @@
+.panel-container {
+    display: flex;
+    align-items: center; 
+    margin: 0 5rem;
+}
+
+.panel-btn {
+    background-color: var(--color-1-lighter);
+    color: var(--color-2-darker);
+    border-right: solid 1px var(--color-white);
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center; 
+}

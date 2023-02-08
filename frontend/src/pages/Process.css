@@ -15,17 +15,6 @@ td {
     padding: 0 15%;
 }
 
-.process-btn {
-    background-color: var(--color-1-lighter);
-    color: var(--color-2-darker);
-    border: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    font-size: 20px;
-    display: flex;
-    align-items: center; 
-}
-
 .process-btn:hover {
     background-color: var(--color-1-light);
     color: var(--color-gray-10);
@@ -37,13 +26,4 @@ td {
 
 .download-btn:hover {
     background-color: var(--color-2-light);
-}
-
-.status-symbol {
-    float: right;
-    margin-left: auto;
-    width: 4rem;
-    height: 4rem;
-    display: flex;
-    align-items: center;    
 }
