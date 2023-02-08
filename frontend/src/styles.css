@@ -124,8 +124,8 @@
      * color-error(#ffd1d2), color-success(#c8e675), 
      * color-info(#d7ecfb), color-notice(#fff099)
      */
-    --color-error                  : hsla(359, 100%, 91%, 1);
-    --color-success                : hsla(76, 69%, 68%, 1);
+    --color-error                  : hsla(359, 100%, 39%, 1);
+    --color-success                : hsla(120, 54%, 49%, 1);
     --color-info                   : hsla(205, 82%, 91%, 1);
     --color-notice                 : hsla(51, 100%, 80%, 1);
     --color-error-content          : hsla(359, 50%, 50%, 1);

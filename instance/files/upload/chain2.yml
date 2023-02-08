@@ -1,0 +1,10 @@
+﻿%YAML 1.1
+# Type: Model
+# Program: OrcaFlex 11.3a21
+# File: T:\DOF\Restart Analyses\Chain\chain2.yml
+# Created: 16:49 on 26/09/2022
+# User: nicky
+# Machine: WS-ARM81
+---
+RestartingFrom: chain1.yml
+...

@@ -4,7 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     WTF_CSRF_ENABLED = True
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'very-secret-key'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or secrets.token_urlsafe(16)
     SECURITY_PASSWORD_SALT = secrets.SystemRandom().getrandbits(128)
     
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \

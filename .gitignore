@@ -13,3 +13,9 @@ app/__pycache__/
 
 # logs
 *.log*
+
+# files
+instance/files/*
+*.dat
+*.yml
+*.sim

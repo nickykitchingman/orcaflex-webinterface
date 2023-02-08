@@ -8,6 +8,7 @@ table {
 
 td {
     padding: 1rem 0;
+    height: 1px;    
 }
 
 .job-table {
@@ -21,7 +22,8 @@ td {
     padding: 12px 20px;
     cursor: pointer;
     font-size: 20px;
-    display: block;
+    display: flex;
+    align-items: center; 
 }
 
 .process-btn:hover {
@@ -30,19 +32,18 @@ td {
 }
 
 .process-col {
-    width: 95%;
-}
-
-.download-btn {
-    background-color: var(--color-2-lighter);
-    border: none;
-    color: var(--color-white);
-    padding: 12px 20px;
-    cursor: pointer;
-    font-size: 20px;
-    display: block;
+    width: 100%;
 }
 
 .download-btn:hover {
     background-color: var(--color-2-light);
+}
+
+.status-symbol {
+    float: right;
+    margin-left: auto;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;    
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
 
-import Loading from '../components/Loading';
+import LoadingDots from '../components/LoadingDots';
 
 const Upload = () => {
     const [message, setMessage] = useState('');
@@ -18,6 +18,13 @@ const Upload = () => {
         }
         return true;
     };
+    
+    const checkStatus = reponse => { 
+        if (reponse.ok)  {
+            return reponse;
+        }
+        throw new Error(`Error: status code ${reponse.status}`);
+    }
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -40,15 +47,17 @@ const Upload = () => {
                 body: formData
             }).then(
                 response => {
+                    checkStatus(response);
                     setMessage('Files uploaded successfully');
                     navigate('/process');
                 }
             ).catch(
                 error => {
                     setMessage('An error occurred. Please try again.');
-                    console.log(error);
+                    console.error(error);
                 }
-            )
+            ),
+            'upload-area'
         );
     };
 
@@ -61,7 +70,7 @@ const Upload = () => {
                 <div className="space-1"></div>
                 <input type="submit" value="Upload" />
             </form>
-            <Loading />
+            <LoadingDots area="upload-area"/>
             <div id="message">{message}</div>
         </div>
     );
