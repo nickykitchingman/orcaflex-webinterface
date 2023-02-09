@@ -5,12 +5,17 @@
 }
 
 .panel-btn {
-    background-color: var(--color-1-lighter);
-    color: var(--color-2-darker);
+    background-color: var(--color-btn);
+    color: var(--color-btn-text);
     border-right: solid 1px var(--color-white);
     padding: 12px 20px;
     cursor: pointer;
     font-size: 20px;
     display: flex;
     align-items: center; 
+}
+
+.panel-btn-text {
+    background-color: var(--color-btn-hover);
+    color: var(--color-btn-hover-text);
 }

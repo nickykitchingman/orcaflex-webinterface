@@ -1,13 +1,18 @@
 .download-btn {
-    background-color: var(--color-2-lighter);
-    border: none;
+    background-color: var(--color-2-light);
     color: var(--color-white);
+    border: none;
     padding: 12px 20px;
     cursor: pointer;
     font-size: 20px;
     height: 100%;
     display: flex;
     align-items: center;    
+}
+
+.download-btn:hover {
+    background-color: var(--color-2);
+    color: var(--color-btn-hover-text);
 }
 
 .download-loading {

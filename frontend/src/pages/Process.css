@@ -15,15 +15,6 @@ td {
     padding: 0 15%;
 }
 
-.process-btn:hover {
-    background-color: var(--color-1-light);
-    color: var(--color-gray-10);
-}
-
 .process-col {
     width: 100%;
-}
-
-.download-btn:hover {
-    background-color: var(--color-2-light);
 }

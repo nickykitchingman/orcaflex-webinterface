@@ -5,7 +5,7 @@ from . import filing
 import os
 import json
 import threading
-from OrcFxAPI import Model    
+from OrcFxAPI import Model, DLLError
 
 def get_job(model):
     filename = model.latestFileName
@@ -20,6 +20,7 @@ def statics_progress_handler(model, progress):
     job = get_job(model)
     if job is None:
         return True  # Kill job
+    job.set_progress(progress)
     return False
     
 def dynamics_progress_handler(model, time, start, stop):
@@ -48,21 +49,31 @@ def run_jobs(jobs):
                 model.progressHandler = percent_progress_handler
                    
                 load_path = os.path.join(filing.LOAD_PATH, job.full_filename())
+                job.set_progress('Loading')   
                 model.LoadData(load_path)
+                job.set_progress('Running')
                 model.RunSimulation()
                 
-                path = os.path.join(filing.SAVE_PATH, job.sim_filename())
+                path = os.path.join(filing.SAVE_PATH, job.sim_filename())                
+                job.set_progress('Saving')
                 model.SaveSimulation(path)            
                 job.completed(job.sim_filename())
+            except DLLError as e:
+                if e.status == 29:
+                    job.cancelled()
+                    app.logger.info('Simulation ended: Job cancelled')
+                else:
+                    job.failed(e.errorString) 
+                    app.logger.error(f'{e}')  
             except Exception as e:
-                job.set_status(JobStatus.Failed)  
+                job.failed('Server error')  
                 app.logger.error(f'{e}')      
 
     for job in jobs:  
         try:
             threading.Thread(target=run_job, args=[job.id, app.app_context()]).start()
         except Exception as e:
-            job.set_status(JobStatus.Failed)
+            job.failed('Server error')
             app.logger.error(f'{e}')
         
         
@@ -76,10 +87,10 @@ def process_jobs(job_ids):
         try:
             job = db.session.get(Job, job_id)
             if job is not None and job.status != JobStatus.Running and not is_duplicate(job):
-                job.set_status(JobStatus.Running)
+                job.started()
                 jobs.append(job)
         except Exception as e:
-            job.set_status(JobStatus.Failed)
+            job.failed('Server error')
             app.logger.error(f'{e}')
         
     if len(jobs) == 0:
@@ -100,7 +111,10 @@ def stop_jobs(job_ids):
     jobs = Job.query.filter(
         Job.id.in_(job_ids)
     ).update(
-        values={'status': JobStatus.Failed}
+        values={
+            'status': JobStatus.Cancelled, 
+            'progress': 'Cancelled'
+        }
     )
     db.session.commit()
     

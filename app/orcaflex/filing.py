@@ -2,6 +2,7 @@ from app import app, db
 from app.models import Job, JobStatus
 import os
 import json
+from flask import jsonify
 from werkzeug.utils import secure_filename
 from io import BytesIO
 from zipfile import ZipFile
@@ -53,6 +54,14 @@ def get_all_files():
     uploads = os.listdir(LOAD_PATH)
     processed = os.listdir(SAVE_PATH) 
     return uploads, processed
+    
+def get_jobs(ids):
+    return Job.query.filter(Job.id.in_(ids)).all()
+
+def get_jobs_json(ids):
+    jobs = get_jobs(ids)
+    dicts = [job.get_dict() for job in jobs]
+    return jsonify({'jobs': dicts})
     
 def get_all_jobs():
     return Job.query.all()

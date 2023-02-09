@@ -103,22 +103,23 @@
     /* color-1(#f26522)
      * color-2(#035d5c)
      */
-    --color-1                      : hsla(19, 89%, 54%, 1);
-    --color-2                      : hsla(179, 94%, 19%, 1);
+    --color-1                      : hsla(34, 60%, 57%, 1);
+    --color-2                      : hsla(214, 60%, 57%, 1);
 
     /* theme color variations
      */
-    --color-1-lightest             : #E5E6E7;
-    --color-1-lighter              : #C5C6C7;
-    --color-1-light                : #758487;
-    --color-1-dark                 : #65747B;
-    --color-1-darker               : #1F2833;
-    --color-1-darkest              : #0B0C10;
-    --color-2-lightest             : hsla(179, 94%, 49%, 1);
-    --color-2-lighter              : hsla(179, 94%, 39%, 1);
-    --color-2-light                : hsla(179, 94%, 29%, 1);
-    --color-2-dark                 : hsla(179, 94%, 9%, 1);
-    --color-2-darker               : hsla(179, 94%, 1%, 1);
+    --color-1-lightest             : hsla(34, 60%, 97%, 1);
+    --color-1-lighter              : hsla(34, 60%, 77%, 1);
+    --color-1-light                : hsla(34, 60%, 67%, 1);
+    --color-1-dark                 : hsla(34, 60%, 47%, 1);
+    --color-1-darker               : hsla(34, 60%, 37%, 1);
+    --color-1-darkest              : hsla(34, 60%, 27%, 1);
+    --color-2-lightest             : hsla(214, 60%, 87%, 1);
+    --color-2-lighter              : hsla(214, 60%, 77%, 1);
+    --color-2-light                : hsla(214, 60%, 67%, 1);
+    --color-2-dark                 : hsla(214, 60%, 57%, 1);
+    --color-2-darker               : hsla(214, 60%, 47%, 1);
+    --color-2-darkest               : hsla(214, 60%, 37%, 1);
 
     /* feedback colors
      * color-error(#ffd1d2), color-success(#c8e675), 
@@ -3128,12 +3129,16 @@ img.u-pull-left {
 .s-header__menu-links a {
     display             : block;
     font-family         : var(--font-2);
-    font-size           : 1.4rem;
+    font-size           : 4rem;
     font-weight         : 400;
     line-height         : var(--vspace-1);
-    color               : rgba(255, 255, 255, 0.6);
+    color               : var(--color-1-dark);
     padding             : 0 1.2rem;
     transition-property : color, background-color;
+}
+
+.s-header__menu-links a:hover {
+    color               : var(--color-1-darkest)
 }
 
 .s-header__menu-links .current a {

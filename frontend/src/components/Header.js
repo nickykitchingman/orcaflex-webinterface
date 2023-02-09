@@ -3,10 +3,10 @@ import './Header.css';
 const Header = () => {
     return (    
         <nav>
-            <br/>            
+            <div className="space-1"></div>        
             <div>       
                 <ul>
-                    <li><a href="/home"> Home </a></li>
+                    <li className="home-link"><a href="/home"> Home </a></li>
                     <li><a href="/upload"> Upload </a></li>
                     <li><a href="/process"> Process </a></li>
                 </ul>

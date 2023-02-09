@@ -1,6 +1,6 @@
 .process-btn {
-    background-color: var(--color-1-lighter);
-    color: var(--color-2-darker);
+    background-color: var(--color-btn);
+    color: var(--color-btn-text);
     border: none;
     padding: 12px 20px;
     cursor: pointer;
@@ -9,9 +9,21 @@
     align-items: center; 
 }
 
-.status-symbol {
+.process-btn:hover {
+    background-color: var(--color-btn-hover);
+    color: var(--color-btn-hover-text);
+}
+
+.progress-message {
     float: right;
     margin-left: auto;
+    font-size: 18px;
+    font-style: italic;
+}
+
+.status-symbol {
+    float: right;
+    margin-left: 2rem;
     width: 4rem;
     height: 4rem;
     display: flex;

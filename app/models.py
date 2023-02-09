@@ -8,12 +8,14 @@ class JobStatus(enum.IntEnum):
     Running = 1
     Complete = 2
     Failed = 3
+    Cancelled = 4
 
 class Job(db.Model):
     id = db.Column('id', db.Integer, primary_key=True)
     filename = db.Column(db.String(512))
     extension = db.Column(db.String(16))
     status = db.Column(db.Integer)
+    progress = db.Column(db.String(512))
     
     def __init__(self, filename):
         base, ext = os.path.splitext(filename)
@@ -34,9 +36,27 @@ class Job(db.Model):
         self.status = status
         db.session.commit()
     
+    def set_progress(self, progress):
+        self.progress = progress
+        db.session.commit()
+    
+    def started(self):
+        self.status = JobStatus.Running
+        self.progress = 'Starting'
+        db.session.commit()
+    
     def completed(self, filename):   
         self.status = JobStatus.Complete
+        self.progress = ''
         db.session.commit()
+        
+    def failed(self, progress):
+        self.status = JobStatus.Failed
+        self.progress = progress
+        db.session.commit()
+    
+    def cancelled(self):
+        self.set_progress('Cancelled')
     
     def running_or_complete(self):
         return self.status in (JobStatus.Running, JobStatus.Complete)

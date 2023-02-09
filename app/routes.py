@@ -12,6 +12,12 @@ class JobList(Resource):
     def get(self):
         jobs = filing.get_all_jobs_json()
         return Response(jobs, mimetype='application/json')
+    def post(self):
+        content = request.json
+        ids = list(map(int, content['jobs']))
+        jobs = filing.get_jobs(ids)
+        dicts = [job.get_dict() for job in jobs]
+        return jsonify({'jobs': dicts})
 
 class ProcessJob(Resource):
     def post(self):

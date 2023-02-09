@@ -3,6 +3,7 @@ import './Process.css';
 import 'font-awesome/css/font-awesome.min.css';
 import { trackPromise } from 'react-promise-tracker';
 
+import { JobStatus } from '../Constants';
 import ProcessButton from '../components/ProcessButton';
 import DownloadButton from '../components/DownloadButton';
 import ProcessPanel from '../components/ProcessPanel';
@@ -12,23 +13,23 @@ const Process = () => {
     const [jobs, setJobs] = useState([]);
     
     const updateJob = newJob => {
-        setJobs(jobs.map(job => job.id == newJob.id ? newJob: job));
+        setJobs(prevJobs => prevJobs.map(job => job.id == newJob.id ? newJob: job));
     }
     
     const updateJobs = newJobs => {
-        const chooseJob = (job, newJob) => newJob ? newJob : job;        
-        setJobs(jobs.map(job => chooseJob(newJobs.find(newJob => newJob.id == job.id), job)));
+        const chooseJob = (newJob, job) => newJob ? newJob : job;        
+        setJobs(prevJobs => prevJobs.map(job => chooseJob(newJobs.find(newJob => newJob.id == job.id), job)));
     } 
     
     const setFailed = ids => {
-        setJobs(jobs.map(job => ids.includes(job.id) ? { ...job, status: 3 } : job));
+        setJobs(prevJobs => prevJobs.map(job => ids.includes(job.id) ? { ...job, status: JobStatus.Failed } : job));
     }    
     
     const setRunning = ids => {
-        setJobs(jobs.map(job => ids.includes(job.id) ? { ...job, status: 1 } : job));
+        setJobs(prevJobs => prevJobs.map(job => ids.includes(job.id) ? { ...job, status: JobStatus.Running, progress: 'Starting' } : job));
     }
     
-    const runningJobs = () => jobs.filter(job => job.status == 1);
+    const runningJobs = () => jobs.filter(job => job.status == JobStatus.Running);
     
     const findJob = id => jobs.find(job => job.id == id);
    
@@ -49,9 +50,28 @@ const Process = () => {
         );
     }
     
+    const fetchRunning = () => {
+        let ids = runningJobs().map(job => job.id);
+        if (ids.length == 0) {
+            return;
+        }
+        fetch(
+            'http://localhost:5000/jobs',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json',},
+                body: JSON.stringify({'jobs': ids})
+            }
+        ).then(
+            response => checkStatus(response).json()).then(
+            data => updateJobs(data.jobs)).catch(
+            error => console.error(error)
+        );
+    }
+    
     const processJob = jobId => {  
         const job = findJob(jobId);
-        if (job.status == 1) {
+        if (job.status == JobStatus.Running) {
             return;
         }
         setRunning([jobId]);
@@ -97,7 +117,7 @@ const Process = () => {
     const runAll = () => {
         let readyJobs = [];
         jobs.forEach(job => {
-            if (job.status != 1) {
+            if (job.status != JobStatus.Running) {
                 readyJobs.push(job.id);
             }
         });
@@ -107,7 +127,7 @@ const Process = () => {
     const runPending = () => {
         let pendingJobs = [];
         jobs.forEach(job => {
-            if (job.status == 0) {
+            if (job.status == JobStatus.Pending) {
                 pendingJobs.push(job.id);
             }
         });
@@ -179,10 +199,10 @@ const Process = () => {
 
     const displayJob = job => (
         <tr key={job.id}>
-            <td className="process-col" colSpan={job.status==2?"1":"2"}>
+            <td className="process-col" colSpan={job.status==JobStatus.Complete?"1":"2"}>
                 <ProcessButton onClick={() => processJob(job.id)} job={job}/>
             </td>
-            {job.status == 2 &&
+            {job.status == JobStatus.Complete &&
             (<td className="download-col">
                 <DownloadButton area={`download-${job.id}`} onClick={() => downloadJob(job.id)} />
             </td>)}
@@ -191,15 +211,21 @@ const Process = () => {
     
     const displayJobs = (<table><tbody>{jobs.map((job) => displayJob(job))}</tbody></table>);
     
-    const STATUS_UPDATE_INTERVAL = 2000;
+    const UPDATE_ALL_INTERVAL = 20000;
+    const UPDATE_RUNNING_INTERVAL = 2000;
     
     useEffect(() => {
-        fetchJobs();
-        
-        const interval = setInterval(fetchJobs, STATUS_UPDATE_INTERVAL);
+        fetchJobs();        
+        const interval = setInterval(fetchJobs, UPDATE_ALL_INTERVAL);  
         
         return () => clearInterval(interval);
     }, []);
+    
+    useEffect(() => {
+        const interval = setInterval(fetchRunning, UPDATE_RUNNING_INTERVAL);   
+        
+        return () => clearInterval(interval);
+    }, [jobs]); // Dependency so that the interval uses the latest version of jobs
 
     return (
         <div id="process-page">      
