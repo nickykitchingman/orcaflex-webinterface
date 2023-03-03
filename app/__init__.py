@@ -13,7 +13,7 @@ api = Api(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from app import models, routes, auth, errors
+from app import models, routes, auth
 
 app.register_blueprint(auth.bp)
 
