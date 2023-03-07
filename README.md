@@ -7,6 +7,7 @@ Navigate to *root*
 
 ```
 pip install -r requirements.txt
+flask db init
 flask db migrate
 flask db upgrade
 ```
@@ -26,7 +27,7 @@ Navigate to *root*
 
 #### Terminal 1
 ```
-flask --debug run
+flask run
 ```
 
 #### Terminal 2
