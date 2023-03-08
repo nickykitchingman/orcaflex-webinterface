@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
 
 import LoadingDots from '../components/LoadingDots';
+import { api_url } from '../Utility';
 
 const Upload = () => {
     const [message, setMessage] = useState('');
@@ -42,7 +43,7 @@ const Upload = () => {
         }
         setMessage('');
         trackPromise(
-            fetch('http://localhost:5000/files', {
+            fetch(api_url('/files'), {
                 method: 'POST',
                 body: formData
             }).then(
