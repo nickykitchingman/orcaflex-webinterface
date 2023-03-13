@@ -47,6 +47,12 @@ class ClearJobs(Resource):
     def get(self):
         filing.clear_jobs()
 
+class PauseJobs(Resource):
+    def post(self):
+        content = request.json
+        jobs = content['jobs']
+        api.pause_jobs(jobs)
+
 class StopJobs(Resource):
     def post(self):
         content = request.json

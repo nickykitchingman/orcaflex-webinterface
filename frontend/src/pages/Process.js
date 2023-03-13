@@ -134,7 +134,7 @@ const Process = () => {
         });
         runSome(pendingJobs);
     }
-    
+	
     const downloadJob = jobId => trackPromise(
         fetch(
             api_url('/downloadjob'),
@@ -176,6 +176,30 @@ const Process = () => {
         );
     };
     
+	const pauseJobs = () => {
+		console.log("test")
+		let jobIds = runningJobs().map(job => job.id);
+		
+		if (jobs.length == 0) {
+			return
+		}
+		
+		fetch(
+			api_url('/pausejobs'),
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ 'jobs': jobIds })
+			}
+		).then(
+            response => {
+                checkStatus(response);
+            }
+        ).catch(
+            error => console.error(error)
+        );
+	}
+	
     const stopJobs = () => {    
         let jobIds = runningJobs().map(job => job.id);
         if (jobs.length == 0) {
@@ -231,7 +255,7 @@ const Process = () => {
     return (
         <div id="process-page">      
             <h1>Process jobs</h1>            
-            <ProcessPanel onClear={clearJobs} onStop={stopJobs} onRunPending={runPending} onRunAll={runAll}/>
+            <ProcessPanel onClear={clearJobs} onPause={pauseJobs} onStop={stopJobs} onRunPending={runPending} onRunAll={runAll}/>
             <div className="job-table">{displayJobs}</div>
             <div className="space-1"></div>
         </div>

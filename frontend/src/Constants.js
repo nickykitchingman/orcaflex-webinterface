@@ -3,7 +3,8 @@ export const JobStatus = {
     Running: 1,
     Complete: 2,
     Failed: 3,
-    Cancelled: 4
+    Cancelled: 4,
+	Paused: 5
 }
 
 export const JobStatusStrings = [
@@ -11,5 +12,6 @@ export const JobStatusStrings = [
     'Running',
     'Complete',
     'Failed',
-    'Cancelled'
+    'Cancelled',
+	'Paused'
 ]

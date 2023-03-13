@@ -8,6 +8,18 @@ import threading
 from OrcFxAPI import Model, DLLError
 
 def get_job(model):
+    db.session.refresh()
+
+    filename = model.latestFileName
+    name = os.path.basename(filename)
+    base, _ = os.path.splitext(name)
+    return Job.query.filter_by(
+        filename = base
+    ).first()
+
+def get_running_job(model):
+    db.session.refresh()
+
     filename = model.latestFileName
     name = os.path.basename(filename)
     base, _ = os.path.splitext(name)
@@ -17,16 +29,29 @@ def get_job(model):
     ).first()
 
 def statics_progress_handler(model, progress):
-    job = get_job(model)
+    job = get_running_job(model)
+    
     if job is None:
         return True  # Kill job
+        
     job.set_progress(progress)
     return False
     
 def dynamics_progress_handler(model, time, start, stop):
     job = get_job(model)
+  
+    #print(job.status)
+  
+    print(job)
+  
     if job is None:
         return True
+    elif job.status == JobStatus.Paused:
+        print("Pausing")
+        model.PauseSimulation()
+    elif job.status != JobStatus.Running:
+        return True
+        
     return False
     
 def percent_progress_handler(model, percent):
@@ -60,8 +85,12 @@ def run_jobs(jobs):
                 job.completed(job.sim_filename())
             except DLLError as e:
                 if e.status == 29:
-                    job.cancelled()
-                    app.logger.info('Simulation ended: Job cancelled')
+                    if job.status != JobStatus.Paused:
+                        job.cancelled()
+                        app.logger.info('Simulation ended: Job cancelled')
+                    else:
+                        job.paused()
+                        app.logger.info('Simulation paused')
                 else:
                     job.failed(e.errorString) 
                     app.logger.error(f'{e}')  
@@ -75,7 +104,6 @@ def run_jobs(jobs):
         except Exception as e:
             job.failed('Server error')
             app.logger.error(f'{e}')
-        
         
 def process_jobs(job_ids):
     jobs = []
@@ -107,6 +135,21 @@ def process_job(job_id):
         return None
     return jobs[0]
 
+def pause_jobs(job_ids):
+    jobs = Job.query.filter(
+        Job.id.in_(job_ids)
+    ).update(
+        values={
+            'status': JobStatus.Paused,
+            'progress': 'Paused'
+        }
+    )
+    
+    for job in Job.query.all():
+        print(job.status)
+    
+    db.session.commit()
+
 def stop_jobs(job_ids):
     jobs = Job.query.filter(
         Job.id.in_(job_ids)
@@ -116,6 +159,7 @@ def stop_jobs(job_ids):
             'progress': 'Cancelled'
         }
     )
+    
     db.session.commit()
     
     

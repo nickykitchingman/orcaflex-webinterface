@@ -9,6 +9,7 @@ class JobStatus(enum.IntEnum):
     Complete = 2
     Failed = 3
     Cancelled = 4
+    Paused = 5
 
 class Job(db.Model):
     id = db.Column('id', db.Integer, primary_key=True)
@@ -53,6 +54,11 @@ class Job(db.Model):
     def failed(self, progress):
         self.status = JobStatus.Failed
         self.progress = progress
+        db.session.commit()
+    
+    def paused(self):
+        self.status = JobStatus.Paused
+        self.progress = 'Paused'
         db.session.commit()
     
     def cancelled(self):
