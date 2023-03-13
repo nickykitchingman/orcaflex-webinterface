@@ -16,3 +16,4 @@ class Config(object):
     FILES_FOLDER = r'files'
     UPLOAD_FOLDER = r'upload'
     DOWNLOAD_FOLDER = r'download'
+    PAUSED_FOLDER = r'paused'

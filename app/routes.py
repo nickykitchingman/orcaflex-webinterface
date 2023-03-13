@@ -24,7 +24,9 @@ class ProcessJob(Resource):
         content = request.json
         job = content['job']
         sim = api.process_job(job)
-        return jsonify({'job': sim.get_dict()})
+
+        if sim:
+            return jsonify({'job': sim.get_dict()})
 
 class ProcessJobs(Resource):
     def post(self):
@@ -46,6 +48,12 @@ class DownloadJob(Resource):
 class ClearJobs(Resource):
     def get(self):
         filing.clear_jobs()
+
+class PauseJobs(Resource):
+    def post(self):
+        content = request.json
+        jobs = content['jobs']
+        api.pause_jobs(jobs)
 
 class StopJobs(Resource):
     def post(self):

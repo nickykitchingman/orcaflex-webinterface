@@ -13,6 +13,11 @@
     font-size: 2.5rem;
 }
 
+.status-paused {
+	color: var(--color-notice);
+	font-size: 2.5rem;
+}
+
 .status-cancelled {
     color: var(--color-notice);
     font-size: 2.5rem;
