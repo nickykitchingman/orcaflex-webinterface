@@ -8,40 +8,46 @@ import threading
 from OrcFxAPI import Model, DLLError
 
 def get_job(model):
-    db.session.refresh()
-
     filename = model.latestFileName
     name = os.path.basename(filename)
     base, _ = os.path.splitext(name)
-    return Job.query.filter_by(
+
+    job = Job.query.filter_by(
         filename = base
     ).first()
 
-def get_running_job(model):
-    db.session.refresh()
+    if job:
+        db.session.refresh(job)
 
+    return job
+
+def get_running_job(model):
     filename = model.latestFileName
     name = os.path.basename(filename)
     base, _ = os.path.splitext(name)
-    return Job.query.filter_by(
+
+    job = Job.query.filter_by(
         filename = base, 
         status = JobStatus.Running
     ).first()
 
+    if job:
+        db.session.refresh(job)
+
+    return job
+
 def statics_progress_handler(model, progress):
-    job = get_running_job(model)
-    
-    if job is None:
+    job = get_job(model)
+
+    if job is None or job.status not in (JobStatus.Running, JobStatus.Paused):
         return True  # Kill job
-        
+
     job.set_progress(progress)
     return False
     
 def dynamics_progress_handler(model, time, start, stop):
     job = get_job(model)
-  
-    print(job)
-  
+
     if job is None:
         return True
     elif job.status == JobStatus.Paused:
@@ -53,8 +59,10 @@ def dynamics_progress_handler(model, time, start, stop):
     
 def percent_progress_handler(model, percent):
     job = get_job(model)
-    if job is None:
+
+    if job is None or job.status not in (JobStatus.Running, JobStatus.Paused):
         return True
+
     return False
 
 def run_jobs(jobs):
@@ -70,25 +78,34 @@ def run_jobs(jobs):
                 model.staticsProgressHandler = statics_progress_handler
                 model.dynamicsProgressHandler = dynamics_progress_handler
                 model.progressHandler = percent_progress_handler
-                   
+                
                 load_path = os.path.join(filing.LOAD_PATH, job.full_filename())
+
+                if job.status == JobStatus.Paused:      
+                    load_path = os.path.join(filing.PAUSED_PATH, job.full_filename())
+
                 job.set_progress('Loading')   
+
                 model.LoadData(load_path)
                 job.set_progress('Running')
+
                 model.RunSimulation()
-                
-                path = os.path.join(filing.SAVE_PATH, job.sim_filename())                
+
+                path = os.path.join(filing.SAVE_PATH, job.sim_filename())
+
+                if job.status == JobStatus.Paused:
+                    path = os.path.join(filing.PAUSED_PATH, job.sim_filename())
+
                 job.set_progress('Saving')
-                model.SaveSimulation(path)            
-                job.completed(job.sim_filename())
+                model.SaveSimulation(path)      
+
+                if job.status != JobStatus.Paused:      
+                    job.completed(job.sim_filename())
+
             except DLLError as e:
                 if e.status == 29:
-                    if job.status != JobStatus.Paused:
-                        job.cancelled()
-                        app.logger.info('Simulation ended: Job cancelled')
-                    else:
-                        job.paused()
-                        app.logger.info('Simulation paused')
+                    job.cancelled()
+                    app.logger.info('Simulation ended: Job cancelled')
                 else:
                     job.failed(e.errorString) 
                     app.logger.error(f'{e}')  
@@ -131,6 +148,7 @@ def process_job(job_id):
     
     if len(jobs) == 0:
         return None
+
     return jobs[0]
 
 def pause_jobs(job_ids):

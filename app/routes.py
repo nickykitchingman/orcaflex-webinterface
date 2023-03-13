@@ -24,7 +24,9 @@ class ProcessJob(Resource):
         content = request.json
         job = content['job']
         sim = api.process_job(job)
-        return jsonify({'job': sim.get_dict()})
+
+        if sim:
+            return jsonify({'job': sim.get_dict()})
 
 class ProcessJobs(Resource):
     def post(self):
