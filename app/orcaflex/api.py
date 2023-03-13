@@ -99,7 +99,9 @@ def run_jobs(jobs):
                 job.set_progress('Saving')
                 model.SaveSimulation(path)      
 
-                if job.status != JobStatus.Paused:      
+                if job.status == JobStatus.Paused:
+                    job.paused()
+                else:    
                     job.completed(job.sim_filename())
 
             except DLLError as e:
