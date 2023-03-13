@@ -26,6 +26,7 @@ npm install package
 Navigate to *root*
 
 #### Terminal 1
+Start a virtual environment
 ```
 flask run
 ```
