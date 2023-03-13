@@ -4,6 +4,7 @@ import 'font-awesome/css/font-awesome.min.css';
 import { trackPromise } from 'react-promise-tracker';
 
 import { JobStatus } from '../Constants';
+import { api_url } from '../Utility';
 import ProcessButton from '../components/ProcessButton';
 import DownloadButton from '../components/DownloadButton';
 import ProcessPanel from '../components/ProcessPanel';
@@ -42,7 +43,7 @@ const Process = () => {
     
     const fetchJobs = () => {
         fetch(
-            'http://localhost:5000/jobs'
+            api_url('/jobs')
         ).then(
             response => checkStatus(response).json()).then(
             data => setJobs(data)).catch(
@@ -56,7 +57,7 @@ const Process = () => {
             return;
         }
         fetch(
-            'http://localhost:5000/jobs',
+            api_url('/jobs'),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
@@ -76,7 +77,7 @@ const Process = () => {
         }
         setRunning([jobId]);
         fetch(
-            'http://localhost:5000/processjob',
+            api_url('/processjob'),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
@@ -98,7 +99,7 @@ const Process = () => {
         }
         setRunning(ids);
         fetch(
-            'http://localhost:5000/processjobs',
+            api_url('/processjobs'),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
@@ -136,7 +137,7 @@ const Process = () => {
     
     const downloadJob = jobId => trackPromise(
         fetch(
-            'http://localhost:5000/downloadjob',
+            api_url('/downloadjob'),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
@@ -164,7 +165,7 @@ const Process = () => {
     
     const clearJobs = () => {        
         fetch(
-            'http://localhost:5000/clearjobs'
+            api_url('/clearjobs')
         ).then(
             response => {
                 checkStatus(response);
@@ -182,7 +183,7 @@ const Process = () => {
         }
         
         fetch(
-            'http://localhost:5000/stopjobs',
+            api_url('/stopjobs'),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
