@@ -40,14 +40,11 @@ def statics_progress_handler(model, progress):
 def dynamics_progress_handler(model, time, start, stop):
     job = get_job(model)
   
-    #print(job.status)
-  
     print(job)
   
     if job is None:
         return True
     elif job.status == JobStatus.Paused:
-        print("Pausing")
         model.PauseSimulation()
     elif job.status != JobStatus.Running:
         return True
@@ -64,7 +61,8 @@ def run_jobs(jobs):
     def run_job(job_id, context):
         with context:
             try:
-                job = db.session.get(Job, job_id);
+                job = db.session.get(Job, job_id)
+
                 if job is None:
                     return
                  
@@ -144,9 +142,6 @@ def pause_jobs(job_ids):
             'progress': 'Paused'
         }
     )
-    
-    for job in Job.query.all():
-        print(job.status)
     
     db.session.commit()
 

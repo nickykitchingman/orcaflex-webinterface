@@ -177,7 +177,6 @@ const Process = () => {
     };
     
 	const pauseJobs = () => {
-		console.log("test")
 		let jobIds = runningJobs().map(job => job.id);
 		
 		if (jobs.length == 0) {

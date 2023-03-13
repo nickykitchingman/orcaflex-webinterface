@@ -2,7 +2,7 @@
 
 ## Setup
 
-Create a virtual environment (venv)  
+Create the virtual environment (venv)  
 Navigate to *root*  
 
 ```
@@ -26,7 +26,7 @@ npm install package
 Navigate to *root*
 
 #### Terminal 1
-Start a virtual environment
+Start the virtual environment
 ```
 flask run
 ```
