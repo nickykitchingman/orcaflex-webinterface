@@ -134,7 +134,7 @@ const Process = () => {
         });
         runSome(pendingJobs);
     }
-	
+    
     const downloadJob = jobId => trackPromise(
         fetch(
             api_url('/downloadjob'),
@@ -176,30 +176,30 @@ const Process = () => {
         );
     };
     
-	const pauseJobs = () => {
-		console.log("test")
-		let jobIds = runningJobs().map(job => job.id);
-		
-		if (jobs.length == 0) {
-			return
-		}
-		
-		fetch(
-			api_url('/pausejobs'),
-			{
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ 'jobs': jobIds })
-			}
-		).then(
+    const pauseJobs = () => {
+        console.log("test")
+        let jobIds = runningJobs().map(job => job.id);
+        
+        if (jobs.length == 0) {
+            return
+        }
+        
+        fetch(
+            api_url('/pausejobs'),
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 'jobs': jobIds })
+            }
+        ).then(
             response => {
                 checkStatus(response);
             }
         ).catch(
             error => console.error(error)
         );
-	}
-	
+    }
+    
     const stopJobs = () => {    
         let jobIds = runningJobs().map(job => job.id);
         if (jobs.length == 0) {
