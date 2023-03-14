@@ -4,18 +4,15 @@ import 'font-awesome/css/font-awesome.min.css';
 import { trackPromise } from 'react-promise-tracker';
 
 import { JobStatus } from '../Constants';
-import { api_url } from '../Utility';
+import { api_url, checkStatus } from '../Utility';
 import ProcessButton from '../components/ProcessButton';
 import DownloadButton from '../components/DownloadButton';
 import ProcessPanel from '../components/ProcessPanel';
 
-const ACTIVE_THRESHOLD = 15000
-
 const Process = () => {
     
     const [jobs, setJobs] = useState([]);
-    const [lastUpdateTime, setLastUpdateTime] = useState(0);
-
+    
     const updateJob = newJob => {
         setJobs(prevJobs => prevJobs.map(job => job.id == newJob.id ? newJob: job));
     }
@@ -34,35 +31,26 @@ const Process = () => {
     }
     
     const runningJobs = () => jobs.filter(job => job.status == JobStatus.Running);
-    const activeJobs = () => jobs.filter(job => job.status == JobStatus.Running || job.status == JobStatus.Paused && (Date.now() - lastUpdateTime < ACTIVE_THRESHOLD));
     
     const findJob = id => jobs.find(job => job.id == id);
-   
-    const checkStatus = reponse => { 
-        if (reponse.ok)  {
-            return reponse;
-        }
-
-        throw new Error(`Error: status code ${reponse.status}`);
-    }
     
     const fetchJobs = () => {
         fetch(
             api_url('/jobs')
         ).then(
-            response => checkStatus(response).json()).then(
-            data => setJobs(data)).catch(
+            response => checkStatus(response).json()
+        ).then(
+            data => setJobs(data)
+        ).catch(
             error => console.error(error)
         );
     }
     
     const fetchRunning = () => {
-        let ids = activeJobs().map(job => job.id);
-
+        let ids = runningJobs().map(job => job.id);
         if (ids.length == 0) {
             return;
         }
-
         fetch(
             api_url('/jobs'),
             {
@@ -79,13 +67,10 @@ const Process = () => {
     
     const processJob = jobId => {  
         const job = findJob(jobId);
-
         if (job.status == JobStatus.Running) {
             return;
         }
-
         setRunning([jobId]);
-
         fetch(
             api_url('/processjob'),
             {
@@ -107,9 +92,7 @@ const Process = () => {
         if (ids.length == 0) {
             return;
         }
-
         setRunning(ids);
-
         fetch(
             api_url('/processjobs'),
             {
@@ -129,28 +112,24 @@ const Process = () => {
     
     const runAll = () => {
         let readyJobs = [];
-
         jobs.forEach(job => {
             if (job.status != JobStatus.Running) {
                 readyJobs.push(job.id);
             }
         });
-
         runSome(readyJobs);
     }
     
     const runPending = () => {
         let pendingJobs = [];
-
         jobs.forEach(job => {
             if (job.status == JobStatus.Pending) {
                 pendingJobs.push(job.id);
             }
         });
-
         runSome(pendingJobs);
     }
-	
+    
     const downloadJob = jobId => trackPromise(
         fetch(
             api_url('/downloadjob'),
@@ -179,51 +158,49 @@ const Process = () => {
         ), `download-${jobId}`
     );
     
-    const clearJobs = () => { 
+    const clearJobs = () => {        
         fetch(
             api_url('/clearjobs')
         ).then(
             response => {
                 checkStatus(response);
                 setJobs(runningJobs());
-                setLastUpdateTime(Date.now());
             }
         ).catch(
             error => console.error(error)
         );
     };
     
-	const pauseJobs = () => {
-		let jobIds = runningJobs().map(job => job.id);
-
-		if (jobs.length == 0) {
-			return
-		}
-		
-		fetch(
-			api_url('/pausejobs'),
-			{
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ 'jobs': jobIds })
-			}
-		).then(
+    const pauseJobs = () => {
+        console.log("test")
+        let jobIds = runningJobs().map(job => job.id);
+        
+        if (jobs.length == 0) {
+            return
+        }
+        
+        fetch(
+            api_url('/pausejobs'),
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 'jobs': jobIds })
+            }
+        ).then(
             response => {
                 checkStatus(response);
-                setLastUpdateTime(Date.now());
             }
         ).catch(
             error => console.error(error)
         );
-	}
-	
-    const stopJobs = () => {
+    }
+    
+    const stopJobs = () => {    
         let jobIds = runningJobs().map(job => job.id);
-
         if (jobs.length == 0) {
             return;
         }
-
+        
         fetch(
             api_url('/stopjobs'),
             {
@@ -234,7 +211,6 @@ const Process = () => {
         ).then(
             response => {
                 checkStatus(response);
-                setLastUpdateTime(Date.now());
             }
         ).catch(
             error => console.error(error)
@@ -255,13 +231,13 @@ const Process = () => {
     
     const displayJobs = (<table><tbody>{jobs.map((job) => displayJob(job))}</tbody></table>);
     
-    const UPDATE_ALL_INTERVAL = 10000;
+    const UPDATE_ALL_INTERVAL = 20000;
     const UPDATE_RUNNING_INTERVAL = 2000;
-
-    const updateAll = useEffect(() => {
+    
+    useEffect(() => {
         fetchJobs();        
         const interval = setInterval(fetchJobs, UPDATE_ALL_INTERVAL);  
-
+        
         return () => clearInterval(interval);
     }, []);
     
@@ -269,7 +245,7 @@ const Process = () => {
         const interval = setInterval(fetchRunning, UPDATE_RUNNING_INTERVAL);   
         
         return () => clearInterval(interval);
-    }, [jobs, lastUpdateTime]); // Dependency so that the interval uses the latest version of jobs
+    }, [jobs]); // Dependency so that the interval uses the latest version of jobs
 
     return (
         <div id="process-page">      

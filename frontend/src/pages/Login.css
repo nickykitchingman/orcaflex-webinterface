@@ -1,0 +1,9 @@
+.message {
+    padding: 10px;
+}
+
+.input-fields {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+}

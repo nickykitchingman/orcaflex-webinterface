@@ -3,7 +3,7 @@ ul {
 }
 
 li {
-    display: inline;
+    display: inline-block;
     margin: 2rem;
     font-size: 4rem;
 }

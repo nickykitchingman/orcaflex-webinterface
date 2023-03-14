@@ -17,8 +17,8 @@ export default function StatusSymbol(props) {
             return (<i className="fa fa-circle status-complete"></i>)
         case JobStatus.Failed:
             return (<i className="fa fa-circle status-failed"></i>)
-		case JobStatus.Paused:
-			return (<i className="fa fa-circle status-paused"></i>)
+        case JobStatus.Paused:
+            return (<i className="fa fa-circle status-paused"></i>)
         case JobStatus.Cancelled:
             return (<i className="fa fa-circle status-cancelled"></i>)
     }

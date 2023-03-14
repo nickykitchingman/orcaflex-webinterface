@@ -177,4 +177,3 @@ def stop_jobs(job_ids):
     
     db.session.commit()
     
-    
