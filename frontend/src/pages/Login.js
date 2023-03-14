@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
 
@@ -31,12 +31,9 @@ const Login = (props) => {
                 })
             }).then(
                 response => {
-                    console.log(props.getState())
                     checkStatus(response);
                     props.setState(true);
                 }
-            ).then(
-                console.log(props.getState())
             ).catch(
                 error => {
                     setMessage('Invalid login!');
@@ -48,6 +45,12 @@ const Login = (props) => {
             'login-area'
         )
     };
+    
+    useEffect(() => {
+        if (props.getState()) {
+            navigate('/home');
+        }
+    }, [props.getState])
 
     return (
         <div id="login-page">
