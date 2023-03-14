@@ -4,9 +4,17 @@ import userState from '../UserState';
 const Header = (props) => {
     const loginOrSignout = () => {
         if (props.getState()) {
-            return <li><a href="/signout">Signout</a></li>
+            return <li><a href="/signout">Signout</a></li>;
         } else {
-            return <li><a href="/login">Login</a></li>
+            return <li><a href="/login">Login</a></li>;
+        }
+    }
+
+    const signupOrNull = () => {
+        if (!props.getState()) {
+            return <li><a href="/signup">Signup</a></li>;
+        } else {
+            return null;
         }
     }
 
@@ -19,6 +27,7 @@ const Header = (props) => {
                     { props.getState() && <li><a href="/upload">Upload</a></li> }
                     { props.getState() && <li><a href="/process">Process</a></li> }
                     { loginOrSignout() }
+                    { signupOrNull() }
                 </ul>
             </div>            
             <div className="break"></div>

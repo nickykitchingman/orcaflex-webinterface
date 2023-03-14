@@ -1,7 +1,6 @@
 from app import db
 import os
 import enum
-import flask_login
 from werkzeug.security import generate_password_hash
 
 @enum.unique
@@ -19,12 +18,14 @@ class Job(db.Model):
     extension = db.Column(db.String(16))
     status = db.Column(db.Integer)
     progress = db.Column(db.String(512))
-    
-    def __init__(self, filename):
+    requester_uid = db.Column(db.String(32))
+
+    def __init__(self, filename, requester_uid):
         base, ext = os.path.splitext(filename)
         self.filename = base
         self.extension = ext[1:]
         self.status = JobStatus.Pending
+        self.requester_uid = requester_uid
     
     def get_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns} 
@@ -69,7 +70,7 @@ class Job(db.Model):
     def running_or_complete(self):
         return self.status in (JobStatus.Running, JobStatus.Complete)
 
-class User(db.Model, flask_login.UserMixin):
+class User(db.Model):
     uid = db.Column(db.Integer, primary_key=True)
 
     username = db.Column(db.String(32))
@@ -78,17 +79,6 @@ class User(db.Model, flask_login.UserMixin):
     def __init__(self, username, password):
         self.username = username
         self.password_hash = generate_password_hash(password)
-
-    #authenticated = db.Column(db.Boolean, default=False)
-
-    """def is_authenticated(self) -> bool:
-        return self.authenticated
-    
-    def is_active(self) -> bool:
-        return True
-
-    def is_anonymous(self) -> bool:
-        return False"""
 
     def get_id(self) -> str:
         return str(self.uid)

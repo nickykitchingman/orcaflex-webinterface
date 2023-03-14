@@ -4,7 +4,7 @@ import 'font-awesome/css/font-awesome.min.css';
 import { trackPromise } from 'react-promise-tracker';
 
 import { JobStatus } from '../Constants';
-import { api_url } from '../Utility';
+import { api_url, checkStatus } from '../Utility';
 import ProcessButton from '../components/ProcessButton';
 import DownloadButton from '../components/DownloadButton';
 import ProcessPanel from '../components/ProcessPanel';
@@ -33,20 +33,15 @@ const Process = () => {
     const runningJobs = () => jobs.filter(job => job.status == JobStatus.Running);
     
     const findJob = id => jobs.find(job => job.id == id);
-   
-    const checkStatus = reponse => { 
-        if (reponse.ok)  {
-            return reponse;
-        }
-        throw new Error(`Error: status code ${reponse.status}`);
-    }
     
     const fetchJobs = () => {
         fetch(
             api_url('/jobs')
         ).then(
-            response => checkStatus(response).json()).then(
-            data => setJobs(data)).catch(
+            response => checkStatus(response).json()
+        ).then(
+            data => setJobs(data)
+        ).catch(
             error => console.error(error)
         );
     }

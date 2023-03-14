@@ -19,8 +19,8 @@ def valid_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def add_job(filename):
-    job = Job(filename)
+def add_job(filename, requester_uid):
+    job = Job(filename, requester_uid)
     db.session.add(job)
     db.session.commit()
 

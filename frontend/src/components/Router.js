@@ -6,6 +6,7 @@ import Upload from '../pages/Upload'
 import Process from '../pages/Process'
 import Login from '../pages/Login'
 import Signout from '../pages/Signout'
+import Signup from '../pages/Signup'
 
 import { RouterError } from '../pages/Error'
 
@@ -48,6 +49,11 @@ const Router = (props) => {
                 <Route
                     path="/signout"
                     element={<Signout getState={props.getState} setState={props.setState} />}
+                    errorElement={<RouterError />}
+                />
+                <Route
+                    path="/signup"
+                    element={<Signup getState={props.getState} setState={props.setState} />}
                     errorElement={<RouterError />}
                 />
             </Routes>        
