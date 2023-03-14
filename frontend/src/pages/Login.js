@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
 
 import InputField from '../components/InputField';
@@ -8,7 +9,10 @@ import { api_url, checkStatus } from '../Utility';
 
 import './Login.css';
 
-const Login = () => {
+import userState from '../UserState';
+
+const Login = (props) => {
+    const navigate = useNavigate();
     const [message, setMessage] = useState('');
 
     const handleSubmit = e => {
@@ -16,8 +20,6 @@ const Login = () => {
 
         const username = e.target.elements['username'].value;
         const password = e.target.elements['password'].value;
-
-        const formData = new FormData();
 
         trackPromise(
             fetch(api_url('/login'), {
@@ -29,16 +31,18 @@ const Login = () => {
                 })
             }).then(
                 response => {
+                    console.log(props.getState())
                     checkStatus(response);
-                    navigate('/upload');
+                    props.setState(true);
                 }
+            ).then(
+                console.log(props.getState())
             ).catch(
                 error => {
                     setMessage('Invalid login!');
                     console.error(error);
 
-                    e.target.elements['username'].value = '';
-                    e.target.elements['password'].value = '';
+                    e.target.reset()
                 }
             ),
             'login-area'

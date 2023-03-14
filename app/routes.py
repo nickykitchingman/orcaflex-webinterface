@@ -2,7 +2,8 @@ from app import app
 from app.orcaflex import filing, api
 from flask import request, render_template, send_file, Response, jsonify
 from flask_restful import Resource
-from app.auth import auth
+from app.auth import auth, load_user
+import flask_login
 
 class FileSubmission(Resource):
     def post(self):
@@ -71,8 +72,13 @@ class Login(Resource):
         authenticated_user = auth(username, password)
 
         if authenticated_user:
+            flask_login.login_user(authenticated_user)
             return Response(status = 200)
 
         return Response(status = 401)
 
+class Signout(Resource):
+    def post(self):
+        flask_login.logout_user()
+        return Response(status = 200)
         

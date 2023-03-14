@@ -5,9 +5,19 @@ import Home from '../pages/Home'
 import Upload from '../pages/Upload'
 import Process from '../pages/Process'
 import Login from '../pages/Login'
+import Signout from '../pages/Signout'
+
 import { RouterError } from '../pages/Error'
 
-const Router = () => {
+const Router = (props) => {
+    const requireLogin = (normal) => {
+        if (props.getState()) {
+            return normal
+        } else {
+            return <Navigate to="/login" />
+        }
+    };
+
     return (
         <BrowserRouter>        
             <Routes>   
@@ -17,23 +27,28 @@ const Router = () => {
                 />
                 <Route 
                     path="/home" 
-                    element={<Home />}  
+                    element={<Home />}
                     errorElement={<RouterError />}
                 />
                 <Route 
                     path="/upload" 
-                    element={<Upload />}  
+                    element={requireLogin(<Upload />)}  
                     errorElement={<RouterError />}
                 />     
                 <Route 
                     path="/process" 
-                    element={<Process />}  
+                    element={requireLogin(<Process />)}  
                     errorElement={<RouterError />}
                 />    
                 <Route
                     path="/login"
-                    element={<Login />}
-                    errorElement={<Error />}
+                    element={<Login getState={props.getState} setState={props.setState} />}
+                    errorElement={<RouterError />}
+                />
+                <Route
+                    path="/signout"
+                    element={<Signout getState={props.getState} setState={props.setState} />}
+                    errorElement={<RouterError />}
                 />
             </Routes>        
         </BrowserRouter>

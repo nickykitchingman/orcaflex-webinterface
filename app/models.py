@@ -2,6 +2,7 @@ from app import db
 import os
 import enum
 import flask_login
+from werkzeug.security import generate_password_hash
 
 @enum.unique
 class JobStatus(enum.IntEnum):
@@ -74,16 +75,20 @@ class User(db.Model, flask_login.UserMixin):
     username = db.Column(db.String(32))
     password_hash = db.Column(db.String(32))
 
-    authenticated = db.Column(db.Boolean, default=False)
+    def __init__(self, username, password):
+        self.username = username
+        self.password_hash = generate_password_hash(password)
 
-    def is_authenticated(self) -> bool:
+    #authenticated = db.Column(db.Boolean, default=False)
+
+    """def is_authenticated(self) -> bool:
         return self.authenticated
     
     def is_active(self) -> bool:
         return True
 
     def is_anonymous(self) -> bool:
-        return False
+        return False"""
 
     def get_id(self) -> str:
-        return str(uid)
+        return str(self.uid)
