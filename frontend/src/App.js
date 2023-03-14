@@ -3,12 +3,12 @@ import { ErrorBoundary } from 'react-error-boundary'
 
 import Header from './components/Header'
 import Router from './components/Router'
-import Error from './pages/Error'
+import { BoundaryError } from './pages/Error'
 
 const Home = () => {
     return (        
         <div>       
-            <ErrorBoundary FallbackComponent={Error}>
+            <ErrorBoundary FallbackComponent={BoundaryError}>
                 <Header />            
                 <Router />
             </ErrorBoundary>

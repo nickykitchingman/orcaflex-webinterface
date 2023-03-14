@@ -4,7 +4,7 @@ import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom"
 import Home from '../pages/Home'
 import Upload from '../pages/Upload'
 import Process from '../pages/Process'
-import Error from '../pages/Error'
+import { RouterError } from '../pages/Error'
 
 const Router = () => {
     return (
@@ -17,17 +17,17 @@ const Router = () => {
                 <Route 
                     path="/home" 
                     element={<Home />}  
-                    errorElement={<Error />}
+                    errorElement={<RouterError />}
                 />
                 <Route 
                     path="/upload" 
                     element={<Upload />}  
-                    errorElement={<Error />}
+                    errorElement={<RouterError />}
                 />     
                 <Route 
                     path="/process" 
                     element={<Process />}  
-                    errorElement={<Error />}
+                    errorElement={<RouterError />}
                 />    
             </Routes>        
         </BrowserRouter>
