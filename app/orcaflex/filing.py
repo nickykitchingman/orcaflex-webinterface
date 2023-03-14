@@ -13,6 +13,7 @@ SIM = 'sim'
 ALLOWED_EXTENSIONS = {DAT, YML, SIM}
 LOAD_PATH = os.path.join(app.instance_path, app.config['FILES_FOLDER'], app.config['UPLOAD_FOLDER'])
 SAVE_PATH = os.path.join(app.instance_path, app.config['FILES_FOLDER'], app.config['DOWNLOAD_FOLDER'])
+PAUSED_PATH = os.path.join(app.instance_path, app.config['FILES_FOLDER'], app.config['PAUSED_FOLDER'])
 
 def valid_file(filename):
     return '.' in filename and \
