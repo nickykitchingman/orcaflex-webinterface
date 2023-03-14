@@ -1,3 +1,22 @@
-from flask import Blueprint
+from flask_login import LoginManager
+from app.models import User
+from app import app
+from werkzeug.security import check_password_hash
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(uid):
+    return User.get(uid)
+
+def auth(username, password):
+    user = User.query.filter(
+        User.username == username
+    ).first()
+
+    if user:
+        if check_password_hash(user.password_hash, password):
+            return user
+
+    return None

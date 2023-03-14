@@ -4,3 +4,11 @@ export const api_url = (url) => {
     else
         throw new Error('Environment variable \'REACT_APP_API_URL\' is not defined');
 }
+
+export const checkStatus = reponse => { 
+    if (reponse.ok)  {
+        return reponse;
+    }
+    
+    throw new Error(`Error: status code ${reponse.status}`);
+}
