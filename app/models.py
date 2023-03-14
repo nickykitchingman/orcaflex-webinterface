@@ -18,14 +18,14 @@ class Job(db.Model):
     extension = db.Column(db.String(16))
     status = db.Column(db.Integer)
     progress = db.Column(db.String(512))
-    requester_uid = db.Column(db.String(32))
+    user_id = db.Column(db.String(32))
 
-    def __init__(self, filename, requester_uid):
+    def __init__(self, filename, user_id):
         base, ext = os.path.splitext(filename)
         self.filename = base
         self.extension = ext[1:]
         self.status = JobStatus.Pending
-        self.requester_uid = requester_uid
+        self.user_id = user_id
     
     def get_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns} 

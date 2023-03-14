@@ -34,6 +34,7 @@ const Login = (props) => {
                     console.log(props.getState())
                     checkStatus(response);
                     props.setState(true);
+                    setMessage('Login successful!')
                 }
             ).then(
                 console.log(props.getState())
@@ -55,8 +56,8 @@ const Login = (props) => {
 
             <div className="input-fields">
                 <form onSubmit={handleSubmit}>
-                    <InputField id="username" text="Username"/>
-                    <InputField id="password" text="Password"/>
+                    <InputField id="username" text="Username" type="text"/>
+                    <InputField id="password" text="Password" type="password"/>
                     <input type="Submit" value="Login" />
                 </form>
             </div>

@@ -10,12 +10,12 @@ const Header = (props) => {
         }
     }
 
-    const signupOrNull = () => {
-        if (!props.getState()) {
-            return <li><a href="/signup">Signup</a></li>;
-        } else {
-            return null;
-        }
+    const upload = () => {
+        return props.getState() && <li><a href="/upload">Upload</a></li>;
+    }
+
+    const process = () => {
+        return props.getState() && <li><a href="/process">Process</a></li>;
     }
 
     return (    
@@ -24,10 +24,10 @@ const Header = (props) => {
             <div>       
                 <ul>
                     <li className="home-link"><a href="/home">Home</a></li>
-                    { props.getState() && <li><a href="/upload">Upload</a></li> }
-                    { props.getState() && <li><a href="/process">Process</a></li> }
+                    { upload() }
+                    { process() }
                     { loginOrSignout() }
-                    { signupOrNull() }
+                    { !props.getState() && <li><a href="/signup">Signup</a></li> }
                 </ul>
             </div>            
             <div className="break"></div>

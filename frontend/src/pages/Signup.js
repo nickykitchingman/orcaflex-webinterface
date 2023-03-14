@@ -60,8 +60,8 @@ const Login = (props) => {
 
             <div className="input-fields">
                 <form onSubmit={handleSubmit}>
-                    <InputField id="username" text="Username"/>
-                    <InputField id="password" text="Password"/>
+                    <InputField id="username" text="Username" type="text"/>
+                    <InputField id="password" text="Password" type="password"/>
                     <input type="Submit" value="Sign Up" />
                 </form>
             </div>
