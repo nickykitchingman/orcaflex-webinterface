@@ -12,9 +12,9 @@ export default function DownloadButton(props) {
                 <a className="panel-btn" onClick={props.onClear}>
                     Clear
                 </a>
-				<a className="panel-btn" onClick={props.onPause}>
-					Pause
-				</a>
+                <a className="panel-btn" onClick={props.onPause}>
+                    Pause
+                </a>
                 <a className="panel-btn" onClick={props.onStop}>
                     Stop
                 </a>
