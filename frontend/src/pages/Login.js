@@ -33,6 +33,7 @@ const Login = (props) => {
                 response => {
                     checkStatus(response);
                     props.setState(true);
+                    setMessage('Login successful!')
                 }
             ).catch(
                 error => {
@@ -58,8 +59,8 @@ const Login = (props) => {
 
             <div className="input-fields">
                 <form onSubmit={handleSubmit}>
-                    <InputField id="username" text="Username"/>
-                    <InputField id="password" text="Password"/>
+                    <InputField id="username" text="Username" type="text"/>
+                    <InputField id="password" text="Password" type="password"/>
                     <input type="Submit" value="Login" />
                 </form>
             </div>

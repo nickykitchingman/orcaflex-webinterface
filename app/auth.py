@@ -14,14 +14,9 @@ def auth(username, password) -> User:
     return None
 
 def find(username) -> User:
-    user = User.query.filter(
+    return User.query.filter(
         User.username == username
     ).first()
-
-    if user:
-        return user
-
-    return None
 
 def create(username, password):
     user = User(username, password)
