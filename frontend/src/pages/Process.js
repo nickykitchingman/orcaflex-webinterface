@@ -48,9 +48,11 @@ const Process = () => {
     
     const fetchRunning = () => {
         let ids = runningJobs().map(job => job.id);
+		
         if (ids.length == 0) {
             return;
         }
+		
         fetch(
             api_url('/jobs'),
             {
@@ -229,6 +231,16 @@ const Process = () => {
         </tr>
     );   
     
+	const noJobs = () => {
+		let jobs = runningJobs();
+		
+        if (jobs.length == 0) {
+            return (<div id="no-jobs">No active jobs!</div>);
+        }
+		
+		return null;
+	}
+	
     const displayJobs = (<table><tbody>{jobs.map((job) => displayJob(job))}</tbody></table>);
     
     const UPDATE_ALL_INTERVAL = 20000;
@@ -248,11 +260,13 @@ const Process = () => {
     }, [jobs]); // Dependency so that the interval uses the latest version of jobs
 
     return (
-        <div id="process-page">      
-            <h1>Process jobs</h1>            
+        <div className="page">      
+            <h1 id="heading">Process Jobs</h1>       
+			<div className="space-1"></div>			
             <ProcessPanel onClear={clearJobs} onPause={pauseJobs} onStop={stopJobs} onRunPending={runPending} onRunAll={runAll}/>
+			<div className="space-1"></div>
             <div className="job-table">{displayJobs}</div>
-            <div className="space-1"></div>
+			{noJobs()}
         </div>
     );
 };

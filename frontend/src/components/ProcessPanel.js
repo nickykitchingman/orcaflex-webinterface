@@ -7,7 +7,6 @@ export default function DownloadButton(props) {
     
     return (
         <div>
-            <div className="space-1"></div>
             <div className="panel-container">
                 <a className="panel-btn" onClick={props.onClear}>
                     Clear
@@ -25,7 +24,6 @@ export default function DownloadButton(props) {
                     Run all
                 </a>
             </div>
-            <div className="space-1"></div>
         </div>
     );
 }

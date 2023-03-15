@@ -24,20 +24,22 @@ def add_job(filename, user_id):
     db.session.add(job)
     db.session.commit()
 
-def add_jobs(filenames):
+def add_jobs(filenames, user_id):
     for filename in filenames:
-        job = Job(filename)
+        job = Job(filename, user_id)
         db.session.add(job)
     db.session.commit()    
 
 def save_files(files):
     filenames = []
+    
     for file in files:
         if file and valid_file(file.filename):
             filename = secure_filename(file.filename)
             path = os.path.join(LOAD_PATH, filename)
             file.save(path)
             filenames.append(filename)
+            
     add_jobs(filenames)
     
 def load_files_zip(filepaths):

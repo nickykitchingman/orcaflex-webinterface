@@ -1,4 +1,14 @@
+.page {
+	min-height: 84vh;
+	background-color: rgb(30, 30, 35);
+}
+
+.page #heading {
+	color: white;
+}
+
 .message {
+	color: white;
     padding: 10px;
 }
 

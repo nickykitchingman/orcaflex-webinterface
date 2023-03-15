@@ -1,13 +1,14 @@
 import React from 'react';
 
+import './Home.css';
+
 const Home = () => {
-    return (        
-        <div id="home-page">        
-            <h1>Welcome to the OrcaFlex web interface</h1>
-            <div className="space-2"></div>
-            <img src="logo256.png" alt="OrcaFlex logo" />
-        </div>
-    );
+    return (
+		<div className="page">
+			<img src="logo256.png" alt="OrcaFlex logo" width="200" height="200"/>
+			<h1 id="heading">Welcome to the OrcaFlex web interface</h1>
+		</div>
+	);
 }
 
 export default Home;

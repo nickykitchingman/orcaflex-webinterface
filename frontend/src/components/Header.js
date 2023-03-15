@@ -19,8 +19,7 @@ const Header = (props) => {
     }
 
     return (    
-        <nav>
-            <div className="space-1"></div>        
+        <nav>      
             <div>       
                 <ul>
                     <li className="home-link"><a href="/home">Home</a></li>
@@ -29,8 +28,7 @@ const Header = (props) => {
                     { loginOrSignout() }
                     { !props.getState() && <li><a href="/signup">Signup</a></li> }
                 </ul>
-            </div>            
-            <div className="break"></div>
+            </div>
         </nav>
     );
 }
