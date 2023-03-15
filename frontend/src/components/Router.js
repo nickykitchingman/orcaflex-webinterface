@@ -33,27 +33,27 @@ const Router = (props) => {
                 />
                 <Route 
                     path="/upload" 
-                    element={requireLogin(<Upload getUID={props.getUID} />)}  
+                    element={requireLogin(<Upload getToken={props.getToken} setToken={props.setToken} />)}  
                     errorElement={<RouterError />}
                 />     
                 <Route 
                     path="/process" 
-                    element={requireLogin(<Process getUID={props.getUID} />)}  
+                    element={requireLogin(<Process getToken={props.getToken} setToken={props.setToken} />)}  
                     errorElement={<RouterError />}
                 />    
                 <Route
                     path="/login"
-                    element={<Login getUID={props.getUID} setUID={props.setUID} signedIn={props.signedIn} />}
+                    element={<Login getToken={props.getToken} setToken={props.setToken} signedIn={props.signedIn} />}
                     errorElement={<RouterError />}
                 />
                 <Route
                     path="/signout"
-                    element={<Signout getUID={props.getUID} setUID={props.setUID} signedIn={props.signedIn} />}
+                    element={<Signout getToken={props.getToken} setToken={props.setToken} signedIn={props.signedIn} />}
                     errorElement={<RouterError />}
                 />
                 <Route
                     path="/signup"
-                    element={<Signup getUID={props.getUID} setUID={props.setUID} signedIn={props.signedIn} />}
+                    element={<Signup getToken={props.getToken} setToken={props.setToken} signedIn={props.signedIn} />}
                     errorElement={<RouterError />}
                 />
             </Routes>        

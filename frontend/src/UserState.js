@@ -1,24 +1,24 @@
 import { useState } from 'react';
 
 const userState = () => {
-	const [userID, setUserID] = useState(localStorage.getItem("userID"));
+	const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
 
-    const getUID = () => {
-        return userID;
+    const getToken = () => {
+        return accessToken;
     };
 
-    const setUID = (uid) => {
-        localStorage.setItem("userID", uid);
-		setUserID(uid);
+    const setToken = (token) => {
+        localStorage.setItem("accessToken", token);
+		setAccessToken(token);
     };
 	
 	const signedIn = () => {
-		return getUID() != null && getUID() != 'null';
-	};
+		return accessToken != null && accessToken != 'null';
+	}
     
-    return { 
-        getUID: getUID,
-        setUID: setUID,
+    return {
+        getToken: getToken,
+        setToken: setToken,
 		signedIn: signedIn
     };
 };

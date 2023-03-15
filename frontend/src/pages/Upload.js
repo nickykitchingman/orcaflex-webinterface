@@ -48,8 +48,9 @@ const Upload = (props) => {
         setMessage('');
 		
         trackPromise(
-            fetch(api_url(`/files`, props.getUID()), {
+            fetch(api_url(`/files`), {
                 method: 'POST',
+				headers: { 'Authorization': `Bearer ${props.getToken()}` },
                 body: formData
             }).then(
                 response => {

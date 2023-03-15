@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import './Process.css';
 import 'font-awesome/css/font-awesome.min.css';
 import { trackPromise } from 'react-promise-tracker';
@@ -10,7 +12,7 @@ import DownloadButton from '../components/DownloadButton';
 import ProcessPanel from '../components/ProcessPanel';
 
 const Process = (props) => {
-    
+    const navigate = useNavigate();
     const [jobs, setJobs] = useState([]);
     
     const updateJob = newJob => {
@@ -36,13 +38,20 @@ const Process = (props) => {
     
     const fetchJobs = () => {
         fetch(
-            api_url(`/jobs`, props.getUID())
+            api_url(`/jobs`),
+			{
+				headers: { 'Authorization': `Bearer ${props.getToken()}` }
+			}
         ).then(
-            response => checkStatus(response).json()
+            response => checkStatus(response, props.setToken).json()
         ).then(
             data => setJobs(data)
         ).catch(
-            error => console.error(error)
+            error => {
+				console.error(error);
+				props.setToken(null);
+				navigate("/login");
+			}
         );
     }
     
@@ -54,16 +63,20 @@ const Process = (props) => {
         }
 		
         fetch(
-            api_url('/jobs', props.getUID()),
+            api_url('/jobs'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'jobs': ids})
             }
         ).then(
-            response => checkStatus(response).json()).then(
+            response => checkStatus(response, props.setToken).json()).then(
             data => updateJobs(data.jobs)).catch(
-            error => console.error(error)
+            error => {
+				console.error(error);
+				props.setToken(null);
+				navigate("/login");
+			}
         );
     }
     
@@ -77,18 +90,20 @@ const Process = (props) => {
         setRunning([jobId]);
 		
         fetch(
-            api_url('/processjob', props.getUID()),
+            api_url('/processjob'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'job': jobId})
             }
         ).then(
-            response => checkStatus(response).json()
+            response => checkStatus(response, props.setToken).json()
         ).catch(
             error => {
                 setFailed([jobId]);
                 console.error(error);
+				props.setToken(null);
+				navigate("/login");
             }
         );
     }
@@ -99,18 +114,20 @@ const Process = (props) => {
         }
         setRunning(ids);
         fetch(
-            api_url('/processjobs', props.getUID()),
+            api_url('/processjobs'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'jobs': ids})
             }
         ).then(
-            response => checkStatus(response).json()
+            response => checkStatus(response, props.setToken).json()
         ).catch(
             error => {
                 console.error(error);
                 setFailed([ids]);
+				props.setToken(null);
+				navigate("/login");
             }
         )
     }
@@ -137,14 +154,14 @@ const Process = (props) => {
     
     const downloadJob = jobId => trackPromise(
         fetch(
-            api_url('/downloadjob', props.getUID()),
+            api_url('/downloadjob'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'job': jobId})
             }
         ).then(
-            response => checkStatus(response).blob()
+            response => checkStatus(response, props.setToken).blob()
         ).then(
             blob => {
                 let url = window.URL.createObjectURL(blob);
@@ -159,20 +176,31 @@ const Process = (props) => {
                 }
             }
         ).catch(
-           error => console.error(error)
+           error => {
+			    console.error(error)
+			    props.setToken(null);
+				navigate("/login");
+		   }
         ), `download-${jobId}`
     );
     
     const clearJobs = () => {        
         fetch(
-            api_url('/clearjobs', props.getUID())
+            api_url('/clearjobs'),
+			{
+				headers: { 'Authorization': `Bearer ${props.getToken()}` }
+			}
         ).then(
             response => {
-                checkStatus(response);
+                checkStatus(response, props.setToken);
                 setJobs(runningJobs());
             }
         ).catch(
-            error => console.error(error)
+            error => {
+				console.error(error);
+				props.setToken(null);
+				navigate("/login");
+			}
         );
     };
     
@@ -184,18 +212,22 @@ const Process = (props) => {
         }
         
         fetch(
-            api_url('/pausejobs', props.getUID()),
+            api_url('/pausejobs'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({ 'jobs': jobIds })
             }
         ).then(
             response => {
-                checkStatus(response);
+                checkStatus(response, props.setToken);
             }
         ).catch(
-            error => console.error(error)
+            error => {
+				console.error(error);
+				props.setToken(null);
+				navigate("/login");
+			}
         );
     }
     
@@ -206,18 +238,22 @@ const Process = (props) => {
         }
         
         fetch(
-            api_url('/stopjobs', props.getUID()),
+            api_url('/stopjobs'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'jobs': jobIds})
             }
         ).then(
             response => {
-                checkStatus(response);
+                checkStatus(response, props.setToken);
             }
         ).catch(
-            error => console.error(error)
+            error => {
+				console.error(error);
+				props.setToken(null);
+				navigate("/login");
+			}
         );
     };
 

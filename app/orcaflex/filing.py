@@ -84,8 +84,8 @@ def get_sim_path(job_id):
     path = os.path.join(SAVE_PATH, job.sim_filename())
     return path, job.sim_filename()
 
-def clear_jobs():
-    for job in Job.query.all():
+def clear_jobs(uid):
+    for job in get_all_jobs(uid):
         if job.status == JobStatus.Running:
             continue
     

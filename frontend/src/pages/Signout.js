@@ -13,27 +13,27 @@ const Signout = (props) => {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
 
-	const original = props.getUID();
+	const original = props.getToken();
 
 	useEffect(() => {
-		props.setUID(null);
+		props.setToken(null);
 	});
 
     trackPromise(
-        fetch(api_url('/signout', props.getUID()), {
+        fetch(api_url('/signout'), {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json',}
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` }
         }).then(
             response => {
                 checkStatus(response);
-				props.setUID(null);
+				props.setToken(null);
                 navigate('/home');
             }
         ).catch(
             error => {
                 setMessage('Failed to sign out!');
                 console.error(error);
-                props.setUID(original);
+                props.setToken(original);
             }
         ),
         'signout-area'

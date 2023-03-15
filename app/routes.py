@@ -4,43 +4,56 @@ from flask import request, render_template, send_file, Response, jsonify, abort
 from flask_restful import Resource
 from app.auth import auth, find, create
 from marshmallow import Schema, fields
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager, set_access_cookies
+from datetime import datetime, timezone, timedelta
+import json
 
-class UidSchema(Schema):
-    uid = fields.Int(required=True)
+class TokenSchema(Schema):
+    token = fields.Int(required=True)
     
-uid_schema_instance = UidSchema()
+token_schema_instance = TokenSchema()
+jwt_manager = JWTManager(app)
 
-def check_uid(func):
-    def wrapper(self):
-        errors = uid_schema_instance.validate(request.args)
+@app.after_request
+def refresh_expiring_jwts(response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
         
-        if errors:
-            abort(400, str(errors))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity(), fresh=True)
+            data = response.get_json()
             
-        return func(self)
-            
-    return wrapper
+            if type(data) is dict:
+                data["token"] = access_token
+                response.data = json.dumps(data)
+                
+            set_access_cookies(response, access_token)
+        
+        return response
+        
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original respone
+        return response
 
 class FileSubmission(Resource):
 
-    @check_uid
+    @jwt_required()
     def post(self):
-        uid = int(request.args['uid'])
-        
         files = request.files.getlist('files')
-        filing.save_files(files, uid)
+        filing.save_files(files, get_jwt_identity())
         
 class JobList(Resource):
     
-    @check_uid
+    @jwt_required()
     def get(self):
-        uid = int(request.args['uid'])
-        
+        uid = get_jwt_identity()
         jobs = filing.get_all_jobs_json(uid)
 
         return Response(jobs, mimetype='application/json')
 
-    @check_uid
+    @jwt_required()
     def post(self):
         content = request.json
         ids = list(map(int, content['jobs']))
@@ -50,13 +63,8 @@ class JobList(Resource):
 
 class ProcessJob(Resource):
        
-    @check_uid
+    @jwt_required()
     def post(self):
-        errors = uid_schema_instance.validate(request.args)
-        
-        if errors:
-            abort(400, str(errors))
-        
         content = request.json
         job = content['job']
         sim = api.process_job(job)
@@ -66,7 +74,7 @@ class ProcessJob(Resource):
 
 class ProcessJobs(Resource):
     
-    @check_uid
+    @jwt_required()
     def post(self):
         content = request.json
         jobs = content['jobs']
@@ -76,7 +84,7 @@ class ProcessJobs(Resource):
 
 class DownloadJob(Resource):
     
-    @check_uid
+    @jwt_required()
     def post(self):
         content = request.json
         job_id = content['job']
@@ -87,13 +95,14 @@ class DownloadJob(Resource):
 
 class ClearJobs(Resource):
     
-    @check_uid
+    @jwt_required()
     def get(self):
-        filing.clear_jobs()
+        uid = get_jwt_identity()
+        filing.clear_jobs(uid)
 
 class PauseJobs(Resource):
     
-    @check_uid
+    @jwt_required()
     def post(self):
         content = request.json
         jobs = content['jobs']
@@ -101,7 +110,7 @@ class PauseJobs(Resource):
     
 class StopJobs(Resource):
     
-    @check_uid
+    @jwt_required()
     def post(self):
         content = request.json
         job_ids = content['jobs']
@@ -109,21 +118,28 @@ class StopJobs(Resource):
 
 class Login(Resource):
     def post(self):
+        """
+        Logs the user in, must have username and password in the content.
+        :return: If authenticated, returns status 200 (OK), the token, else, status 401 (unauthorized).
+        """
+        
         content = request.json
         username = content['username']
         password = content['password']
         authenticated_user = auth(username, password)
 
         if authenticated_user:
-            return jsonify({ 'uid': authenticated_user.uid })
+            token = create_access_token(identity=authenticated_user.uid)
+            return jsonify({ 'token': token })
 
         return Response(status = 401)
 
 class Signout(Resource):
 
-    @check_uid
     def post(self):
-        return Response(status = 200)
+        response = Response(status = 200)
+        unset_jwt_cookies(response)
+        return response
 
 class Signup(Resource):
     def post(self):

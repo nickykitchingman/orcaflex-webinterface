@@ -22,9 +22,9 @@ const Login = (props) => {
         const password = e.target.elements['password'].value;
 		
         trackPromise(
-            fetch(api_url('/login', null), {
+            fetch(api_url('/login'), {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     'username': username, 
                     'password': password
@@ -32,9 +32,9 @@ const Login = (props) => {
             })
 			.then((response) => response.json())
 			.then((result) => {
-				const uid = result.uid;
-				props.setUID(uid);
-				console.log(props.getUID());
+				const token = result.token;
+				props.setToken(token);
+				console.log(props.getToken());
 			})
 			.catch(
                 error => {
@@ -49,10 +49,10 @@ const Login = (props) => {
     };
     
     useEffect(() => {
-        if (props.getUID() != 'null') {
+        if (props.signedIn()) {
             navigate('/home');
         }
-    }, [props.getUID])
+    }, [props.getToken])
 
     return (
         <div id="login-page">
