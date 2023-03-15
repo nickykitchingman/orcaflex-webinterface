@@ -5,7 +5,9 @@ import { trackPromise } from 'react-promise-tracker';
 import LoadingDots from '../components/LoadingDots';
 import { api_url, refreshToken } from '../Utility';
 
-const Upload = (props) => {
+import './Upload.css';
+
+const Upload = () => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
@@ -70,16 +72,25 @@ const Upload = (props) => {
     };
 
     return (
-        <div id="upload-page">      
-            <h1>File submission portal</h1>
-            <div className="space-1"></div>
+        <div className="page">      
+            <h1 id="heading">Upload Files</h1>
+			
+            <div className="message">{message}</div>
+			
             <form onSubmit={handleSubmit}>
-                <input type="file" id="file" name="file" accept=".dat,.yml,.sim" multiple />                
+				<div id="form-container">
+					<label for="files" className="drop-container">
+						<span className="drop-title">Drop Files Here</span>
+						<div className="or">or</div>
+						<input type="file" name="file" accept=".dat, .yml, .sim" multiple />
+					</label>
+				</div>
+				
                 <div className="space-1"></div>
                 <input type="submit" value="Upload" />
             </form>
+			
             <LoadingDots area="upload-area"/>
-            <div id="message">{message}</div>
         </div>
     );
 };

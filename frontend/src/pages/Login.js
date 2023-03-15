@@ -54,7 +54,9 @@ const Login = (props) => {
     }, [props.getToken])
 
     return (
-        <div id="login-page">
+        <div className="page">
+			<h1 id="heading">Login</h1>
+			
             <div className="message">{message}</div>
 
             <div className="input-fields">

@@ -33,12 +33,14 @@ def add_jobs(filenames, user_id):
 
 def save_files(files, user_id):
     filenames = []
+    
     for file in files:
         if file and valid_file(file.filename):
             filename = secure_filename(file.filename)
             path = os.path.join(LOAD_PATH, filename)
             file.save(path)
             filenames.append(filename)
+
     add_jobs(filenames, user_id)
     
 def load_files_zip(filepaths):

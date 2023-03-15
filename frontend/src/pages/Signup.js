@@ -55,7 +55,9 @@ const Login = (props) => {
     };
 
     return (
-        <div id="signup-page">
+        <div className="page">
+			<h1 id="heading">Sign Up</h1>
+			
             <div className="message">{message}</div>
 
             <div className="input-fields">
