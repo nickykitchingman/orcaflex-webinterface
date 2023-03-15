@@ -9,7 +9,7 @@ import ProcessButton from '../components/ProcessButton';
 import DownloadButton from '../components/DownloadButton';
 import ProcessPanel from '../components/ProcessPanel';
 
-const Process = () => {
+const Process = (props) => {
     
     const [jobs, setJobs] = useState([]);
     
@@ -36,7 +36,7 @@ const Process = () => {
     
     const fetchJobs = () => {
         fetch(
-            api_url('/jobs')
+            api_url(`/jobs?uid=${props.getUID()}`)
         ).then(
             response => checkStatus(response).json()
         ).then(
@@ -67,10 +67,13 @@ const Process = () => {
     
     const processJob = jobId => {  
         const job = findJob(jobId);
+		
         if (job.status == JobStatus.Running) {
             return;
         }
+		
         setRunning([jobId]);
+		
         fetch(
             api_url('/processjob'),
             {

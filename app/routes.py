@@ -1,20 +1,37 @@
 from app import app
 from app.orcaflex import filing, api
-from flask import request, render_template, send_file, Response, jsonify
+from flask import request, render_template, send_file, Response, jsonify, abort
 from flask_restful import Resource
 from app.auth import auth, find, create
+from marshmallow import Schema, fields
+
+class UidSchema(Schema):
+    uid = fields.Int(required=True)
+    
+uid_schema_instance = UidSchema()
 
 class FileSubmission(Resource):
-
     def post(self):
         files = request.files.getlist('files')
         filing.save_files(files)
         
 class JobList(Resource):
     def get(self):
-        jobs = filing.get_all_jobs_json()
+        errors = uid_schema_instance.validate(request.args)
+        
+        if errors:
+            abort(400, str(errors))
+        
+        uid = int(request.args['uid'])
+        
+        jobs = filing.get_all_jobs_json(uid)
+        
+        #content = request.json
+        #filtered = list(filter(lambda job: job.uid == content['uid'], ids))
+        
+        print(request.args)
+        
         return Response(jobs, mimetype='application/json')
-
 
     def post(self):
         content = request.json
@@ -79,7 +96,7 @@ class Login(Resource):
         authenticated_user = auth(username, password)
 
         if authenticated_user:
-            return Response(status = 200)
+            return jsonify({ 'uid': authenticated_user.uid })
 
         return Response(status = 401)
 

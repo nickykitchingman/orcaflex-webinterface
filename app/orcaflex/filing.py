@@ -64,11 +64,16 @@ def get_jobs_json(ids):
     dicts = [job.get_dict() for job in jobs]
     return jsonify({'jobs': dicts})
     
-def get_all_jobs():
-    return Job.query.all()
+def get_all_jobs(uid_filter = -1):
+    jobs = Job.query.all()
+    
+    if uid_filter >= 0:
+        jobs = list(filter(lambda job: job.user_id == uid_filter, jobs))
+        
+    return jobs
 
-def get_all_jobs_json():
-    jobs = get_all_jobs()
+def get_all_jobs_json(uid_filter = -1):
+    jobs = get_all_jobs(uid_filter)
     dicts = [job.get_dict() for job in jobs]
     return json.dumps(dicts)
     

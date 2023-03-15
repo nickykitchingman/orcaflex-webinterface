@@ -1,20 +1,25 @@
 import { useState } from 'react';
 
 const userState = () => {
-    const [userState, setUserState] = useState(localStorage.getItem("user-logged-in") === 'true');
+	const [userID, setUserID] = useState(localStorage.getItem("userID"));
 
-    const getState = () => {
-        return userState;
+    const getUID = () => {
+        return userID;
     };
 
-    const setState = state => {
-        localStorage.setItem("user-logged-in", state);
-        setUserState(state);
+    const setUID = (uid) => {
+        localStorage.setItem("userID", uid);
+		setUserID(uid);
     };
+	
+	const signedIn = () => {
+		return getUID() != null && getUID() != 'null';
+	};
     
     return { 
-        getState: getState,
-        setState: setState
+        getUID: getUID,
+        setUID: setUID,
+		signedIn: signedIn
     };
 };
 

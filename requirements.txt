@@ -12,8 +12,10 @@ itsdangerous==2.1.2
 Jinja2==3.1.2
 Mako==1.2.4
 MarkupSafe==2.1.2
+marshmallow==3.19.0
 numpy==1.24.1
 OrcFxAPI==11.3.2
+packaging==23.0
 pytz==2022.7.1
 six==1.16.0
 SQLAlchemy==2.0.2

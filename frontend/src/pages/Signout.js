@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
@@ -13,7 +13,11 @@ const Signout = (props) => {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
 
-    props.setState(false);
+	const original = props.getUID();
+
+	useEffect(() => {
+		props.setUID(null);
+	});
 
     trackPromise(
         fetch(api_url('/signout'), {
@@ -22,13 +26,14 @@ const Signout = (props) => {
         }).then(
             response => {
                 checkStatus(response);
+				props.setUID(null);
                 navigate('/home');
             }
         ).catch(
             error => {
                 setMessage('Failed to sign out!');
                 console.error(error);
-                props.setState(true);
+                props.setUID(original);
             }
         ),
         'signout-area'

@@ -21,6 +21,18 @@ const Login = (props) => {
         const username = e.target.elements['username'].value;
         const password = e.target.elements['password'].value;
 
+		/*response => {
+                    checkStatus(response);
+					
+					const jsonData = response.json()
+					
+					console.log(jsonData)
+					
+					props.setUID(jsonData['uid']);
+					console.log(props.getUID())
+                    setMessage('Login successful!')
+                }*/
+
         trackPromise(
             fetch(api_url('/login'), {
                 method: 'POST',
@@ -29,13 +41,14 @@ const Login = (props) => {
                     'username': username, 
                     'password': password
                 })
-            }).then(
-                response => {
-                    checkStatus(response);
-                    props.setState(true);
-                    setMessage('Login successful!')
-                }
-            ).catch(
+            })
+			.then((response) => response.json())
+			.then((result) => {
+				const uid = result.uid;
+				props.setUID(uid);
+				console.log(props.getUID());
+			})
+			.catch(
                 error => {
                     setMessage('Invalid login!');
                     console.error(error);
@@ -48,10 +61,10 @@ const Login = (props) => {
     };
     
     useEffect(() => {
-        if (props.getState()) {
+        if (props.getUID() != 'null') {
             navigate('/home');
         }
-    }, [props.getState])
+    }, [props.getUID])
 
     return (
         <div id="login-page">

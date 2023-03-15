@@ -32,7 +32,7 @@ const Login = (props) => {
             }).then(
                 response => {
                     try {
-                        checkStatus(response);      
+                        checkStatus(response);    
                         navigate('/login')                  
                     } catch (error) {
                         if (error.toString().includes('418')) {
