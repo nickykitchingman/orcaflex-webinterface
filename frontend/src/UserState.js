@@ -7,9 +7,9 @@ const userState = () => {
         return userState;
     };
 
-    const setState = async (state) => {
-        setUserState(state);
+    const setState = state => {
         localStorage.setItem("user-logged-in", state);
+        setUserState(state);
     };
     
     return { 

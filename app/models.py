@@ -20,12 +20,11 @@ class Job(db.Model):
     progress = db.Column(db.String(512))
     user_id = db.Column(db.String(32))
 
-    def __init__(self, filename, user_id):
+    def __init__(self, filename):
         base, ext = os.path.splitext(filename)
         self.filename = base
         self.extension = ext[1:]
         self.status = JobStatus.Pending
-        self.user_id = user_id
     
     def get_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns} 
@@ -65,7 +64,9 @@ class Job(db.Model):
         db.session.commit()
     
     def cancelled(self):
-        self.set_progress('Cancelled')
+        self.status = JobStatus.Cancelled
+        self.progress = 'Cancelled'
+        db.session.commit()
     
     def running_or_complete(self):
         return self.status in (JobStatus.Running, JobStatus.Complete)

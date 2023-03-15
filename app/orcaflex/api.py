@@ -65,8 +65,8 @@ def percent_progress_handler(model, percent):
 
     return False
 
-def run_jobs(jobs):
-    def run_job(job_id, context):
+def run_jobs(jobs, paused_jobs):
+    def run_job(job_id, is_paused, context):
         with context:
             try:
                 job = db.session.get(Job, job_id)
@@ -81,8 +81,8 @@ def run_jobs(jobs):
                 
                 load_path = os.path.join(filing.LOAD_PATH, job.full_filename())
 
-                if job.status == JobStatus.Paused:      
-                    load_path = os.path.join(filing.PAUSED_PATH, job.full_filename())
+                if is_paused:      
+                    load_path = os.path.join(filing.PAUSED_PATH, job.sim_filename())
 
                 job.set_progress('Loading')   
 
@@ -117,13 +117,15 @@ def run_jobs(jobs):
 
     for job in jobs:  
         try:
-            threading.Thread(target=run_job, args=[job.id, app.app_context()]).start()
+            is_paused = job.id in paused_jobs
+            threading.Thread(target=run_job, args=[job.id, is_paused, app.app_context()]).start()
         except Exception as e:
             job.failed('Server error')
             app.logger.error(f'{e}')
         
 def process_jobs(job_ids):
     jobs = []
+    paused_jobs = set()
     
     def is_duplicate(job): 
         return any(existing.filename == job.filename for existing in jobs)
@@ -132,6 +134,8 @@ def process_jobs(job_ids):
         try:
             job = db.session.get(Job, job_id)
             if job is not None and job.status != JobStatus.Running and not is_duplicate(job):
+                if job.status == JobStatus.Paused:
+                    paused_jobs.add(job_id)
                 job.started()
                 jobs.append(job)
         except Exception as e:
@@ -141,7 +145,7 @@ def process_jobs(job_ids):
     if len(jobs) == 0:
         return []
         
-    run_jobs([job for job in jobs])
+    run_jobs([job for job in jobs], paused_jobs)
         
     return jobs
     

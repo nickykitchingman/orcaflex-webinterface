@@ -2,7 +2,7 @@
 
 ## Setup
 
-Create the virtual environment (venv)  
+Create a virtual environment (venv)  
 Navigate to *root*  
 
 ```
