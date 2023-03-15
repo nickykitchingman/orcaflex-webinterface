@@ -20,6 +20,7 @@
 }
 
 .progress-message {
+	background-color: var(--color-btn);
     float: right;
     margin-left: auto;
     font-size: 18px;
@@ -32,5 +33,9 @@
     width: 4rem;
     height: 4rem;
     display: flex;
-    align-items: center;    
+    align-items: center;
+}
+
+.filename {
+	background-color: var(--color-btn);
 }
