@@ -33,7 +33,7 @@ const Router = (props) => {
                 />
                 <Route 
                     path="/upload" 
-                    element={requireLogin(<Upload />)}  
+                    element={requireLogin(<Upload getUID={props.getUID} />)}  
                     errorElement={<RouterError />}
                 />     
                 <Route 

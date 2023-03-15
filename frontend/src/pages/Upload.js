@@ -5,7 +5,7 @@ import { trackPromise } from 'react-promise-tracker';
 import LoadingDots from '../components/LoadingDots';
 import { api_url } from '../Utility';
 
-const Upload = () => {
+const Upload = (props) => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
@@ -31,19 +31,24 @@ const Upload = () => {
         e.preventDefault();
         const files = e.target.elements['file'].files;
         const formData = new FormData();
+		
         if (files.length === 0) {
             setMessage("Please select a file.");
             return;    
         }
+		
         for (let i = 0; i < files.length; i++) {
             if (!checkValid(files[i].name)) {
                 return;
             }
+			
             formData.append('files', files[i]);
         }
+
         setMessage('');
+		
         trackPromise(
-            fetch(api_url('/files'), {
+            fetch(api_url(`/files`, props.getUID()), {
                 method: 'POST',
                 body: formData
             }).then(

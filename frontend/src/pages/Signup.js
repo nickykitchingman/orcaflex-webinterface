@@ -22,7 +22,7 @@ const Login = (props) => {
         const password = e.target.elements['password'].value;
 
         trackPromise(
-            fetch(api_url('/signup'), {
+            fetch(api_url('/signup', null), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
                 body: JSON.stringify({
@@ -33,13 +33,13 @@ const Login = (props) => {
                 response => {
                     try {
                         checkStatus(response);    
-                        navigate('/login')                  
+                        navigate('/login');              
                     } catch (error) {
                         if (error.toString().includes('418')) {
-                            setMessage('Account with this name already exists!')
-                            e.target.reset()
+                            setMessage('Account with this name already exists!');
+                            e.target.reset();
                         } else {
-                            throw error
+                            throw error;
                         }
                     }
                 }

@@ -36,7 +36,7 @@ const Process = (props) => {
     
     const fetchJobs = () => {
         fetch(
-            api_url(`/jobs?uid=${props.getUID()}`)
+            api_url(`/jobs`, props.getUID())
         ).then(
             response => checkStatus(response).json()
         ).then(
@@ -48,11 +48,13 @@ const Process = (props) => {
     
     const fetchRunning = () => {
         let ids = runningJobs().map(job => job.id);
+		
         if (ids.length == 0) {
             return;
         }
+		
         fetch(
-            api_url('/jobs'),
+            api_url('/jobs', props.getUID()),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
@@ -75,7 +77,7 @@ const Process = (props) => {
         setRunning([jobId]);
 		
         fetch(
-            api_url('/processjob'),
+            api_url('/processjob', props.getUID()),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
@@ -97,7 +99,7 @@ const Process = (props) => {
         }
         setRunning(ids);
         fetch(
-            api_url('/processjobs'),
+            api_url('/processjobs', props.getUID()),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
@@ -135,7 +137,7 @@ const Process = (props) => {
     
     const downloadJob = jobId => trackPromise(
         fetch(
-            api_url('/downloadjob'),
+            api_url('/downloadjob', props.getUID()),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
@@ -163,7 +165,7 @@ const Process = (props) => {
     
     const clearJobs = () => {        
         fetch(
-            api_url('/clearjobs')
+            api_url('/clearjobs', props.getUID())
         ).then(
             response => {
                 checkStatus(response);
@@ -175,7 +177,6 @@ const Process = (props) => {
     };
     
     const pauseJobs = () => {
-        console.log("test")
         let jobIds = runningJobs().map(job => job.id);
         
         if (jobs.length == 0) {
@@ -183,7 +184,7 @@ const Process = (props) => {
         }
         
         fetch(
-            api_url('/pausejobs'),
+            api_url('/pausejobs', props.getUID()),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -205,7 +206,7 @@ const Process = (props) => {
         }
         
         fetch(
-            api_url('/stopjobs'),
+            api_url('/stopjobs', props.getUID()),
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},

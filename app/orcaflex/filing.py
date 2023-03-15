@@ -20,17 +20,18 @@ def valid_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def add_job(filename, user_id):
-    job = Job(filename)
+    job = Job(filename, user_id)
     db.session.add(job)
     db.session.commit()
 
-def add_jobs(filenames):
+def add_jobs(filenames, user_id):
     for filename in filenames:
-        job = Job(filename)
+        job = Job(filename, user_id)
         db.session.add(job)
+        
     db.session.commit()    
 
-def save_files(files):
+def save_files(files, user_id):
     filenames = []
     for file in files:
         if file and valid_file(file.filename):
@@ -38,7 +39,7 @@ def save_files(files):
             path = os.path.join(LOAD_PATH, filename)
             file.save(path)
             filenames.append(filename)
-    add_jobs(filenames)
+    add_jobs(filenames, user_id)
     
 def load_files_zip(filepaths):
     stream = BytesIO()
@@ -65,12 +66,10 @@ def get_jobs_json(ids):
     return jsonify({'jobs': dicts})
     
 def get_all_jobs(uid_filter = -1):
-    jobs = Job.query.all()
-    
     if uid_filter >= 0:
-        jobs = list(filter(lambda job: job.user_id == uid_filter, jobs))
-        
-    return jobs
+        return Job.query.filter_by(user_id = uid_filter)
+
+    return Job.query.all()
 
 def get_all_jobs_json(uid_filter = -1):
     jobs = get_all_jobs(uid_filter)

@@ -10,29 +10,37 @@ class UidSchema(Schema):
     
 uid_schema_instance = UidSchema()
 
-class FileSubmission(Resource):
-    def post(self):
-        files = request.files.getlist('files')
-        filing.save_files(files)
-        
-class JobList(Resource):
-    def get(self):
+def check_uid(func):
+    def wrapper(self):
         errors = uid_schema_instance.validate(request.args)
         
         if errors:
             abort(400, str(errors))
+            
+        return func(self)
+            
+    return wrapper
+
+class FileSubmission(Resource):
+
+    @check_uid
+    def post(self):
+        uid = int(request.args['uid'])
         
+        files = request.files.getlist('files')
+        filing.save_files(files, uid)
+        
+class JobList(Resource):
+    
+    @check_uid
+    def get(self):
         uid = int(request.args['uid'])
         
         jobs = filing.get_all_jobs_json(uid)
-        
-        #content = request.json
-        #filtered = list(filter(lambda job: job.uid == content['uid'], ids))
-        
-        print(request.args)
-        
+
         return Response(jobs, mimetype='application/json')
 
+    @check_uid
     def post(self):
         content = request.json
         ids = list(map(int, content['jobs']))
@@ -41,8 +49,14 @@ class JobList(Resource):
         return jsonify({'jobs': dicts})
 
 class ProcessJob(Resource):
-    
+       
+    @check_uid
     def post(self):
+        errors = uid_schema_instance.validate(request.args)
+        
+        if errors:
+            abort(400, str(errors))
+        
         content = request.json
         job = content['job']
         sim = api.process_job(job)
@@ -52,6 +66,7 @@ class ProcessJob(Resource):
 
 class ProcessJobs(Resource):
     
+    @check_uid
     def post(self):
         content = request.json
         jobs = content['jobs']
@@ -61,6 +76,7 @@ class ProcessJobs(Resource):
 
 class DownloadJob(Resource):
     
+    @check_uid
     def post(self):
         content = request.json
         job_id = content['job']
@@ -71,11 +87,13 @@ class DownloadJob(Resource):
 
 class ClearJobs(Resource):
     
+    @check_uid
     def get(self):
         filing.clear_jobs()
 
 class PauseJobs(Resource):
     
+    @check_uid
     def post(self):
         content = request.json
         jobs = content['jobs']
@@ -83,6 +101,7 @@ class PauseJobs(Resource):
     
 class StopJobs(Resource):
     
+    @check_uid
     def post(self):
         content = request.json
         job_ids = content['jobs']
@@ -101,6 +120,8 @@ class Login(Resource):
         return Response(status = 401)
 
 class Signout(Resource):
+
+    @check_uid
     def post(self):
         return Response(status = 200)
 

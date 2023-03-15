@@ -20,21 +20,9 @@ const Login = (props) => {
 
         const username = e.target.elements['username'].value;
         const password = e.target.elements['password'].value;
-
-		/*response => {
-                    checkStatus(response);
-					
-					const jsonData = response.json()
-					
-					console.log(jsonData)
-					
-					props.setUID(jsonData['uid']);
-					console.log(props.getUID())
-                    setMessage('Login successful!')
-                }*/
-
+		
         trackPromise(
-            fetch(api_url('/login'), {
+            fetch(api_url('/login', null), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',},
                 body: JSON.stringify({

@@ -20,7 +20,7 @@ const Signout = (props) => {
 	});
 
     trackPromise(
-        fetch(api_url('/signout'), {
+        fetch(api_url('/signout', props.getUID()), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json',}
         }).then(
