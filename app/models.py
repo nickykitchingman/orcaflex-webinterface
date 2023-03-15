@@ -64,7 +64,9 @@ class Job(db.Model):
         db.session.commit()
     
     def cancelled(self):
-        self.set_progress('Cancelled')
+        self.status = JobStatus.Cancelled
+        self.progress = 'Cancelled'
+        db.session.commit()
     
     def running_or_complete(self):
         return self.status in (JobStatus.Running, JobStatus.Complete)
