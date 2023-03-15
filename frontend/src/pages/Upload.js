@@ -31,10 +31,11 @@ const Upload = () => {
 
     const handleSubmit = e => {
         e.preventDefault();
+		
         const files = e.target.elements['file'].files;
         const formData = new FormData();
-        
-        if (files.length === 0) {
+		
+		if (files.length === 0) {
             setMessage("Please select a file.");
             return;    
         }
@@ -48,7 +49,7 @@ const Upload = () => {
         }
 
         setMessage('');
-        
+		
         trackPromise(
             fetch(api_url(`/files`), {
                 method: 'POST',

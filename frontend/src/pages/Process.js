@@ -281,8 +281,6 @@ const Process = (props) => {
     );   
     
 	const noJobs = () => {
-		let jobs = runningJobs();
-		
         if (jobs.length == 0) {
             return (<div id="no-jobs">No active jobs!</div>);
         }

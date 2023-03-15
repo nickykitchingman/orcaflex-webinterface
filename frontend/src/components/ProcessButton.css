@@ -9,9 +9,10 @@
     align-items: center; 
 }
 
-.process-btn:hover {
-    background-color: var(--color-btn-hover);
-    color: var(--color-btn-hover-text);
+.process-btn:hover .highlight {
+	background-color: var(--color-2);
+	color: var(--color-2);
+	width: 1%;
 }
 
 #extension {
@@ -28,6 +29,7 @@
 }
 
 .status-symbol {
+	background-color: var(--color-btn);
     float: right;
     margin-left: 2rem;
     width: 4rem;
