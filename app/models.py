@@ -2,6 +2,18 @@ from app import db
 import os
 import enum
 from werkzeug.security import generate_password_hash
+import threading
+
+lock = threading.Lock()
+
+def synchronised(func):
+    def wrapper(*args, **kwargs):
+        with lock:
+            db.session.rollback()
+            func(*args, **kwargs)
+            db.session.commit()
+            
+    return wrapper
 
 @enum.unique
 class JobStatus(enum.IntEnum):
@@ -36,41 +48,65 @@ class Job(db.Model):
     def sim_filename(self):
         return f'{self.filename}.sim'
     
+    @synchronised
     def set_status(self, status):
         self.status = status
-        db.session.commit()
     
+    @synchronised
     def set_progress(self, progress):
         self.progress = progress
-        db.session.commit()
     
+    @synchronised
     def started(self):
         self.status = JobStatus.Running
-        self.progress = 'Starting'
-        db.session.commit()
+        self.progress = 'Queued'
     
+    @synchronised
     def completed(self, filename):   
         self.status = JobStatus.Complete
         self.progress = ''
-        db.session.commit()
-        
+            
+    @synchronised    
     def failed(self, progress):
         self.status = JobStatus.Failed
         self.progress = progress
-        db.session.commit()
     
+    @synchronised    
     def paused(self):
         self.status = JobStatus.Paused
         self.progress = 'Paused'
-        db.session.commit()
     
+    @synchronised
     def cancelled(self):
         self.status = JobStatus.Cancelled
         self.progress = 'Cancelled'
-        db.session.commit()
     
     def running_or_complete(self):
         return self.status in (JobStatus.Running, JobStatus.Complete)
+        
+    @staticmethod
+    @synchronised
+    def pause(job_ids):
+        jobs = Job.query.filter(
+            Job.id.in_(job_ids)
+        ).update(
+            values={
+                'status': JobStatus.Paused, 
+                'progress': 'Paused'
+            }
+        )
+            
+    @staticmethod
+    @synchronised
+    def stop(job_ids):
+        jobs = Job.query.filter(
+            Job.id.in_(job_ids)
+        ).update(
+            values={
+                'status': JobStatus.Cancelled, 
+                'progress': 'Cancelled'
+            }
+        )
 
 class User(db.Model):
     uid = db.Column(db.Integer, primary_key=True)
