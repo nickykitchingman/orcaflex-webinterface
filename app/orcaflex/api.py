@@ -69,6 +69,8 @@ def get_job(model):
     return job
 
 def get_running_job(model): 
+    db.session.rollback()
+    
     filename = model.latestFileName
     name = os.path.basename(filename)
     base, _ = os.path.splitext(name)
@@ -89,8 +91,6 @@ def statics_progress_handler(model, progress):
     if job is None or job.status not in (JobStatus.Running, JobStatus.Paused):
         return True  # Kill job
 
-    #print(f"{job.progress} -> {progress}")
-    #print(end="")
     job.set_progress(progress)
     
     return False
@@ -162,7 +162,6 @@ def run_jobs(jobs, paused_jobs):
                     job.failed(e.errorString) 
                     app.logger.error(f'{e}')  
             except Exception as e:
-                db.session.rollback()
                 job.failed('Server error')  
                 app.logger.error(f'{e}')      
 

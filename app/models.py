@@ -6,7 +6,7 @@ import threading
 
 lock = threading.Lock()
 
-def threadsafe(func):
+def synchronised(func):
     def wrapper(*args, **kwargs):
         with lock:
             db.session.rollback()
@@ -48,35 +48,35 @@ class Job(db.Model):
     def sim_filename(self):
         return f'{self.filename}.sim'
     
-    @threadsafe
+    @synchronised
     def set_status(self, status):
         self.status = status
     
-    @threadsafe
+    @synchronised
     def set_progress(self, progress):
         self.progress = progress
     
-    @threadsafe
+    @synchronised
     def started(self):
         self.status = JobStatus.Running
         self.progress = 'Queued'
     
-    @threadsafe
+    @synchronised
     def completed(self, filename):   
         self.status = JobStatus.Complete
         self.progress = ''
             
-    @threadsafe    
+    @synchronised    
     def failed(self, progress):
         self.status = JobStatus.Failed
         self.progress = progress
     
-    @threadsafe    
+    @synchronised    
     def paused(self):
         self.status = JobStatus.Paused
         self.progress = 'Paused'
     
-    @threadsafe
+    @synchronised
     def cancelled(self):
         self.status = JobStatus.Cancelled
         self.progress = 'Cancelled'
@@ -85,32 +85,28 @@ class Job(db.Model):
         return self.status in (JobStatus.Running, JobStatus.Complete)
         
     @staticmethod
+    @synchronised
     def pause(job_ids):
-        with lock:
-            jobs = Job.query.filter(
-                Job.id.in_(job_ids)
-            ).update(
-                values={
-                    'status': JobStatus.Paused, 
-                    'progress': 'Paused'
-                }
-            )
-            
-            db.session.commit()
+        jobs = Job.query.filter(
+            Job.id.in_(job_ids)
+        ).update(
+            values={
+                'status': JobStatus.Paused, 
+                'progress': 'Paused'
+            }
+        )
             
     @staticmethod
+    @synchronised
     def stop(job_ids):
-        with lock:
-            jobs = Job.query.filter(
-                Job.id.in_(job_ids)
-            ).update(
-                values={
-                    'status': JobStatus.Cancelled, 
-                    'progress': 'Cancelled'
-                }
-            )
-            
-            db.session.commit()
+        jobs = Job.query.filter(
+            Job.id.in_(job_ids)
+        ).update(
+            values={
+                'status': JobStatus.Cancelled, 
+                'progress': 'Cancelled'
+            }
+        )
 
 class User(db.Model):
     uid = db.Column(db.Integer, primary_key=True)
