@@ -250,7 +250,6 @@ def stop_jobs(job_ids):
     )
     
     worker_queue.clear()
-    print('length: ' + str(len(worker_queue)))
     
     db.session.commit()
     
