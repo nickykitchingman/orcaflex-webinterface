@@ -3,15 +3,10 @@ from app.orcaflex import filing, api
 from flask import request, render_template, send_file, Response, jsonify, abort
 from flask_restful import Resource
 from app.auth import auth, find, create
-from marshmallow import Schema, fields
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager, set_access_cookies
 from datetime import datetime, timezone, timedelta
 import json
 
-class TokenSchema(Schema):
-    token = fields.Int(required=True)
-    
-token_schema_instance = TokenSchema()
 jwt_manager = JWTManager(app)
 
 @app.after_request
