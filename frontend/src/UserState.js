@@ -1,19 +1,19 @@
 import { useState } from 'react';
 
 const userState = () => {
-	const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
+	const [orcinaWebToken, setOrcinaWebToken] = useState(localStorage.getItem("orcinaWebToken"));
 
     const getToken = () => {
-        return accessToken;
+        return orcinaWebToken;
     };
 
     const setToken = (token) => {
-        localStorage.setItem("accessToken", token);
-		setAccessToken(token);
+        localStorage.setItem("orcinaWebToken", token);
+		setOrcinaWebToken(token);
     };
 	
 	const signedIn = () => {
-		return accessToken != null && accessToken != 'null';
+		return orcinaWebToken != null && orcinaWebToken != 'null';
 	}
     
     return {

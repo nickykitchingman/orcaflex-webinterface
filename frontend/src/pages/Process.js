@@ -169,7 +169,7 @@ const Process = (props) => {
                 body: JSON.stringify({'job': jobId})
             }
         ).then(
-            response => checkStatus(response, props.setToken).blob()
+            response => checkStatus(response).blob()
         ).then(
             blob => {
                 let url = window.URL.createObjectURL(blob);

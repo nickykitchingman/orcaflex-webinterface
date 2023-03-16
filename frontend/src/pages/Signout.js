@@ -13,8 +13,6 @@ const Signout = (props) => {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
 
-	const original = props.getToken();
-
 	useEffect(() => {
 		props.setToken(null);
 	});
@@ -33,7 +31,6 @@ const Signout = (props) => {
             error => {
                 setMessage('Failed to sign out!');
                 console.error(error);
-                props.setToken(original);
             }
         ),
         'signout-area'
