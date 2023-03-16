@@ -1,5 +1,7 @@
 import os
 import secrets
+from datetime import timedelta
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
@@ -17,3 +19,6 @@ class Config(object):
     UPLOAD_FOLDER = r'upload'
     DOWNLOAD_FOLDER = r'download'
     PAUSED_FOLDER = r'paused'
+    
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or secrets.token_urlsafe(64)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)

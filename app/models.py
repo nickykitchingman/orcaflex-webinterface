@@ -20,11 +20,12 @@ class Job(db.Model):
     progress = db.Column(db.String(512))
     user_id = db.Column(db.String(32))
 
-    def __init__(self, filename):
+    def __init__(self, filename, user_id):
         base, ext = os.path.splitext(filename)
         self.filename = base
         self.extension = ext[1:]
         self.status = JobStatus.Pending
+        self.user_id = user_id
     
     def get_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns} 
