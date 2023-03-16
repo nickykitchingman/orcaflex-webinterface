@@ -14,6 +14,11 @@
     color: var(--color-btn-hover-text);
 }
 
+#extension {
+	display: inline-block;
+	color: gray;
+}
+
 .progress-message {
     float: right;
     margin-left: auto;
