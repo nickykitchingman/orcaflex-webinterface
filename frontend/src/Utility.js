@@ -15,5 +15,7 @@ export const checkStatus = (response) => {
 }
 
 export const refreshToken = (json, setToken) => {
-	json.token && setToken(json.token);
+	try {
+		json.token && setToken(json.token);
+	} catch {}
 };

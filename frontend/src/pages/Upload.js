@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
 
 import LoadingDots from '../components/LoadingDots';
-import { api_url } from '../Utility';
+import { api_url, refreshToken } from '../Utility';
 
 const Upload = (props) => {
     const [message, setMessage] = useState('');
@@ -55,7 +55,8 @@ const Upload = (props) => {
             }).then(
 				response => checkStatus(response).json()
 			).then((data) => {
-				refreshToken(data, props.setToken)
+				refreshToken(data, props.setToken);
+				navigate('/process');
 			}).catch(
                 error => {
                     setMessage('An error occurred. Please try again.');
