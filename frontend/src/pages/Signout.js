@@ -13,10 +13,6 @@ const Signout = (props) => {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
 
-	useEffect(() => {
-		props.setToken(null);
-	});
-
     trackPromise(
         fetch(api_url('/signout'), {
             method: 'POST',
@@ -24,7 +20,7 @@ const Signout = (props) => {
         }).then(
             response => {
                 checkStatus(response);
-				props.setToken(null);
+                props.setToken(null);
                 navigate('/home');
             }
         ).catch(

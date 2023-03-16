@@ -39,30 +39,30 @@ const Process = (props) => {
     const fetchJobs = () => {
         fetch(
             api_url(`/jobs`),
-			{
-				headers: { 'Authorization': `Bearer ${props.getToken()}` }
-			}
+            {
+                headers: { 'Authorization': `Bearer ${props.getToken()}` }
+            }
         ).then(
             response => checkStatus(response).json()
         ).then((data) => {
-			refreshToken(data, props.setToken);
-			setJobs(data);
-		}).catch(
+            refreshToken(data, props.setToken);
+            setJobs(data);
+        }).catch(
             error => {
-				console.error(error);
-				props.setToken(null);
-				navigate("/login");
-			}
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
+            }
         );
     }
     
     const fetchRunning = () => {
         let ids = runningJobs().map(job => job.id);
-		
+        
         if (ids.length == 0) {
             return;
         }
-		
+        
         fetch(
             api_url('/jobs'),
             {
@@ -73,26 +73,26 @@ const Process = (props) => {
         ).then(
             response => checkStatus(response).json()
         ).then((data) => {
-			refreshToken(data, props.setToken)
-			updateJobs(data.jobs);
-		}).catch(
+            refreshToken(data, props.setToken)
+            updateJobs(data.jobs);
+        }).catch(
             error => {
-				console.error(error);
-				props.setToken(null);
-				navigate("/login");
-			}
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
+            }
         );
     }
     
     const processJob = jobId => {  
         const job = findJob(jobId);
-		
+        
         if (job.status == JobStatus.Running) {
             return;
         }
-		
+        
         setRunning([jobId]);
-		
+        
         fetch(
             api_url('/processjob'),
             {
@@ -103,13 +103,13 @@ const Process = (props) => {
         ).then(
             response => checkStatus(response).json()
         ).then((data) => {
-			refreshToken(data, props.setToken)
-		}).catch(
+            refreshToken(data, props.setToken)
+        }).catch(
             error => {
                 setFailed([jobId]);
                 console.error(error);
-				props.setToken(null);
-				navigate("/login");
+                props.setToken(null);
+                navigate("/login");
             }
         );
     }
@@ -129,13 +129,13 @@ const Process = (props) => {
         ).then(
             response => checkStatus(response).json()
         ).then((data) => {
-			refreshToken(data, props.setToken)
-		}).catch(
+            refreshToken(data, props.setToken)
+        }).catch(
             error => {
                 console.error(error);
                 setFailed([ids]);
-				props.setToken(null);
-				navigate("/login");
+                props.setToken(null);
+                navigate("/login");
             }
         )
     }
@@ -185,33 +185,33 @@ const Process = (props) => {
             }
         ).catch(
            error => {
-			    console.error(error)
-			    props.setToken(null);
-				navigate("/login");
-		   }
+                console.error(error)
+                props.setToken(null);
+                navigate("/login");
+           }
         ), `download-${jobId}`
     );
     
     const clearJobs = () => {        
         fetch(
             api_url('/clearjobs'),
-			{
-				headers: { 'Authorization': `Bearer ${props.getToken()}` }
-			}
+            {
+                headers: { 'Authorization': `Bearer ${props.getToken()}` }
+            }
         ).then(
             response => {
-				const res = checkStatus(response);
-				setJobs(runningJobs());
-				return res.json();
-			}
+                const res = checkStatus(response);
+                setJobs(runningJobs());
+                return res.json();
+            }
         ).then((data) => {
-			refreshToken(data, props.setToken)
-		}).catch(
+            refreshToken(data, props.setToken)
+        }).catch(
             error => {
-				console.error(error);
-				props.setToken(null);
-				navigate("/login");
-			}
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
+            }
         );
     };
     
@@ -232,13 +232,13 @@ const Process = (props) => {
         ).then(
             response => checkStatus(response).json()
         ).then((data) => {
-			refreshToken(data, props.setToken)
-		}).catch(
+            refreshToken(data, props.setToken)
+        }).catch(
             error => {
-				console.error(error);
-				props.setToken(null);
-				navigate("/login");
-			}
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
+            }
         );
     }
     
@@ -258,13 +258,13 @@ const Process = (props) => {
         ).then(
             response => checkStatus(response).json()
         ).then((data) => {
-			refreshToken(data, props.setToken)
-		}).catch(
+            refreshToken(data, props.setToken)
+        }).catch(
             error => {
-				console.error(error);
-				props.setToken(null);
-				navigate("/login");
-			}
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
+            }
         );
     };
 

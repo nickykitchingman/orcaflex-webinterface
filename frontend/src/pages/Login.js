@@ -20,7 +20,7 @@ const Login = (props) => {
 
         const username = e.target.elements['username'].value;
         const password = e.target.elements['password'].value;
-		
+        
         trackPromise(
             fetch(api_url('/login'), {
                 method: 'POST',
@@ -30,12 +30,12 @@ const Login = (props) => {
                     'password': password
                 })
             })
-			.then((response) => response.json())
-			.then((result) => {
-				const token = result.token;
-				props.setToken(token);
-			})
-			.catch(
+            .then((response) => response.json())
+            .then((result) => {
+                const token = result.token;
+                props.setToken(token);
+            })
+            .catch(
                 error => {
                     setMessage('Invalid login!');
                     console.error(error);
