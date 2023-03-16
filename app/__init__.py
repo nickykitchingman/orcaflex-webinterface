@@ -13,8 +13,6 @@ api = Api(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-#############################################################
-
 from app import models, routes, auth
 
 api.add_resource(routes.FileSubmission, '/files')
