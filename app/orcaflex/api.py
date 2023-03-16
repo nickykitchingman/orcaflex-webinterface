@@ -6,10 +6,7 @@ import os
 import json
 import threading
 from OrcFxAPI import Model, DLLError
-import multiprocessing
 
-# default to max
-MAXIMUM_ACTIVE_WORKERS = multiprocessing.cpu_count()
 worker_queue = []
 
 class Worker:
@@ -62,11 +59,9 @@ def update_workers():
         
     active_count = len(list(filter(lambda worker: worker.active, worker_queue)))
 
-    #print(active_count)
-
-    if active_count < MAXIMUM_ACTIVE_WORKERS:
+    if active_count < app.config['MAXIMUM_ACTIVE_WORKERS']:
         for worker in worker_queue:
-            if active_count >= MAXIMUM_ACTIVE_WORKERS:
+            if active_count >= app.config['MAXIMUM_ACTIVE_WORKERS']:
                 break
                 
             if not worker.active:
@@ -214,9 +209,7 @@ def process_jobs(job_ids):
         return []
         
     run_jobs([job for job in jobs], paused_jobs)
-    
-    update_workers()
-        
+
     return jobs
     
 def process_job(job_id):
