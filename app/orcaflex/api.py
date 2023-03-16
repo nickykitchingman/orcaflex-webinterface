@@ -7,6 +7,70 @@ import json
 import threading
 from OrcFxAPI import Model, DLLError
 
+MAXIMUM_ACTIVE_WORKERS = 16
+worker_queue = []
+
+class Worker:
+    def __init__(self, job, target, args):
+        # the job is processing / has processed
+        self.active = False
+        
+        # the job has finished processing
+        self.completed = False
+            
+        self.target = target
+        self.args = args
+        self.attempts = 0
+        
+        self.job = job
+
+    def deploy(self):
+        self.attempts += 1
+        
+        def wrapper(job_id, is_paused, context):
+            self.active = True
+            self.target(job_id, is_paused, context)
+            self.completed = True
+            
+        threading.Thread(target=wrapper, args=self.args).start()
+
+def update_workers():
+    if len(worker_queue) == 0:
+        return
+        
+    # remove completed workers
+    completed_workers = list(filter(lambda worker: worker.completed or worker.job.status == JobStatus.Cancelled, worker_queue))
+        
+    # failed workers
+    for worker in worker_queue:
+    
+        # tried and failed to process
+        if worker.active and worker.job.status == JobStatus.Failed:
+        
+            # retry max of 3 times
+            if worker.attempts < 3:
+                worker.deploy()
+                
+            # mark worker for removal
+            else:
+                completed_workers.append(worker)
+        
+    for worker in completed_workers:
+        worker_queue.remove(worker)
+        
+    active_count = len(list(filter(lambda worker: worker.active, worker_queue)))
+
+    #print(active_count)
+
+    if active_count < MAXIMUM_ACTIVE_WORKERS:
+        for worker in worker_queue:
+            if active_count >= MAXIMUM_ACTIVE_WORKERS:
+                break
+                
+            if not worker.active:
+                worker.deploy()
+                active_count += 1
+
 def get_job(model):
     filename = model.latestFileName
     name = os.path.basename(filename)
@@ -21,7 +85,7 @@ def get_job(model):
 
     return job
 
-def get_running_job(model):
+def get_running_job(model): 
     filename = model.latestFileName
     name = os.path.basename(filename)
     base, _ = os.path.splitext(name)
@@ -118,11 +182,11 @@ def run_jobs(jobs, paused_jobs):
     for job in jobs:  
         try:
             is_paused = job.id in paused_jobs
-            threading.Thread(target=run_job, args=[job.id, is_paused, app.app_context()]).start()
+            worker_queue.append(Worker(job=job, target=run_job, args=[job.id, is_paused, app.app_context()]))
         except Exception as e:
             job.failed('Server error')
             app.logger.error(f'{e}')
-        
+  
 def process_jobs(job_ids):
     jobs = []
     paused_jobs = set()
@@ -136,8 +200,10 @@ def process_jobs(job_ids):
             if job is not None and job.status != JobStatus.Running and not is_duplicate(job):
                 if job.status == JobStatus.Paused:
                     paused_jobs.add(job_id)
+                    
                 job.started()
                 jobs.append(job)
+                
         except Exception as e:
             job.failed('Server error')
             app.logger.error(f'{e}')
@@ -146,6 +212,8 @@ def process_jobs(job_ids):
         return []
         
     run_jobs([job for job in jobs], paused_jobs)
+    
+    update_workers()
         
     return jobs
     
@@ -178,6 +246,9 @@ def stop_jobs(job_ids):
             'progress': 'Cancelled'
         }
     )
+    
+    worker_queue.clear()
+    print('length: ' + str(len(worker_queue)))
     
     db.session.commit()
     
