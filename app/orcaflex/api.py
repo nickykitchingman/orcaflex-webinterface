@@ -6,8 +6,10 @@ import os
 import json
 import threading
 from OrcFxAPI import Model, DLLError
+import multiprocessing
 
-MAXIMUM_ACTIVE_WORKERS = 16
+# default to max
+MAXIMUM_ACTIVE_WORKERS = multiprocessing.cpu_count()
 worker_queue = []
 
 class Worker:
