@@ -7,6 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     MAXIMUM_ACTIVE_WORKERS = os.environ.get('MAXIMUM_ACTIVE_WORKERS') or multiprocessing.cpu_count()
+    WORKER_UPDATE_INTERVAL = 2 # in seconds
     
     WTF_CSRF_ENABLED = True
     SECRET_KEY = os.environ.get('SECRET_KEY') or secrets.token_urlsafe(16)

@@ -6,6 +6,7 @@ import os
 import json
 import threading
 from OrcFxAPI import Model, DLLError
+import time
 
 worker_queue = []
 
@@ -19,18 +20,15 @@ class Worker:
             
         self.target = target
         self.args = args
-        self.attempts = 0
         
         self.job = job
 
     def deploy(self):
-        self.attempts += 1
-        
-        def wrapper(job_id, is_paused, context):
+        def wrapper(*args):
             self.active = True
-            self.target(job_id, is_paused, context)
+            self.target(*args)
             self.completed = True
-            
+
         threading.Thread(target=wrapper, args=self.args).start()
 
 def update_workers():
@@ -45,14 +43,8 @@ def update_workers():
     
         # tried and failed to process
         if worker.active and worker.job.status == JobStatus.Failed:
-        
-            # retry max of 3 times
-            if worker.attempts < 3:
-                worker.deploy()
-                
             # mark worker for removal
-            else:
-                completed_workers.append(worker)
+            completed_workers.append(worker)
         
     for worker in completed_workers:
         worker_queue.remove(worker)
@@ -69,6 +61,8 @@ def update_workers():
                 active_count += 1
 
 def get_job(model):
+    db.session.rollback()
+    
     filename = model.latestFileName
     name = os.path.basename(filename)
     base, _ = os.path.splitext(name)
@@ -103,7 +97,10 @@ def statics_progress_handler(model, progress):
     if job is None or job.status not in (JobStatus.Running, JobStatus.Paused):
         return True  # Kill job
 
+    #print(f"{job.progress} -> {progress}")
+    #print(end="")
     job.set_progress(progress)
+    
     return False
     
 def dynamics_progress_handler(model, time, start, stop):
@@ -173,12 +170,14 @@ def run_jobs(jobs, paused_jobs):
                     job.failed(e.errorString) 
                     app.logger.error(f'{e}')  
             except Exception as e:
+                db.session.rollback()
                 job.failed('Server error')  
                 app.logger.error(f'{e}')      
 
     for job in jobs:  
         try:
             is_paused = job.id in paused_jobs
+            
             worker_queue.append(Worker(job=job, target=run_job, args=[job.id, is_paused, app.app_context()]))
         except Exception as e:
             job.failed('Server error')
@@ -221,28 +220,10 @@ def process_job(job_id):
     return jobs[0]
 
 def pause_jobs(job_ids):
-    jobs = Job.query.filter(
-        Job.id.in_(job_ids)
-    ).update(
-        values={
-            'status': JobStatus.Paused,
-            'progress': 'Paused'
-        }
-    )
-    
-    db.session.commit()
+    Job.pause(job_ids)
 
 def stop_jobs(job_ids):
-    jobs = Job.query.filter(
-        Job.id.in_(job_ids)
-    ).update(
-        values={
-            'status': JobStatus.Cancelled, 
-            'progress': 'Cancelled'
-        }
-    )
+    Job.stop(job_ids)
     
     worker_queue.clear()
-    
-    db.session.commit()
     

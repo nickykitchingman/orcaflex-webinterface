@@ -2,6 +2,9 @@ from app import db
 import os
 import enum
 from werkzeug.security import generate_password_hash
+import threading
+
+lock = threading.Lock()
 
 @enum.unique
 class JobStatus(enum.IntEnum):
@@ -37,40 +40,90 @@ class Job(db.Model):
         return f'{self.filename}.sim'
     
     def set_status(self, status):
-        self.status = status
-        db.session.commit()
+        with lock:
+            db.session.rollback()
+            
+            self.status = status
+            db.session.commit()
     
     def set_progress(self, progress):
-        self.progress = progress
-        db.session.commit()
+        with lock:
+            db.session.rollback()
+            
+            self.progress = progress
+            
+            db.session.commit()
     
     def started(self):
-        self.status = JobStatus.Running
-        self.progress = 'Starting'
-        db.session.commit()
+        with lock:
+            db.session.rollback()
+            
+            self.status = JobStatus.Running
+            self.progress = 'Queued'
+            db.session.commit()
     
     def completed(self, filename):   
-        self.status = JobStatus.Complete
-        self.progress = ''
-        db.session.commit()
+        with lock:
+            db.session.rollback()
+            
+            self.status = JobStatus.Complete
+            self.progress = ''
+            db.session.commit()
         
     def failed(self, progress):
-        self.status = JobStatus.Failed
-        self.progress = progress
-        db.session.commit()
-    
+        with lock:
+            db.session.rollback()
+            
+            self.status = JobStatus.Failed
+            self.progress = progress
+            db.session.commit()
+        
     def paused(self):
-        self.status = JobStatus.Paused
-        self.progress = 'Paused'
-        db.session.commit()
+        with lock:
+            db.session.rollback()
+            
+            self.status = JobStatus.Paused
+            self.progress = 'Paused'
+            db.session.commit()
     
     def cancelled(self):
-        self.status = JobStatus.Cancelled
-        self.progress = 'Cancelled'
-        db.session.commit()
+        with lock:
+            db.session.rollback()
+            
+            self.status = JobStatus.Cancelled
+            self.progress = 'Cancelled'
+            db.session.commit()
     
     def running_or_complete(self):
         return self.status in (JobStatus.Running, JobStatus.Complete)
+        
+    @staticmethod
+    def pause(job_ids):
+        with lock:
+            jobs = Job.query.filter(
+                Job.id.in_(job_ids)
+            ).update(
+                values={
+                    'status': JobStatus.Paused, 
+                    'progress': 'Paused'
+                }
+            )
+            
+            db.session.commit()
+            
+    @staticmethod
+    def stop(job_ids):
+        with lock:
+            jobs = Job.query.filter(
+                Job.id.in_(job_ids)
+            ).update(
+                values={
+                    'status': JobStatus.Cancelled, 
+                    'progress': 'Cancelled'
+                }
+            )
+            
+            db.session.commit()
 
 class User(db.Model):
     uid = db.Column(db.Integer, primary_key=True)

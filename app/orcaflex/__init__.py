@@ -12,6 +12,6 @@ os.makedirs(filing.PAUSED_PATH, exist_ok=True)
 def update():
     while True:
         update_workers()
-        sleep(0.1)
+        sleep(app.config['WORKER_UPDATE_INTERVAL'])
 
 threading.Thread(target=update, args=[], daemon=True, name="Worker-Update").start()
