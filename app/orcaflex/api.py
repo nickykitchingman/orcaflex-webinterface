@@ -35,16 +35,8 @@ def update_workers():
     if len(worker_queue) == 0:
         return
         
-    # remove completed workers
-    completed_workers = list(filter(lambda worker: worker.completed or worker.job.status == JobStatus.Cancelled, worker_queue))
-        
-    # failed workers
-    for worker in worker_queue:
-    
-        # tried and failed to process
-        if worker.active and worker.job.status == JobStatus.Failed:
-            # mark worker for removal
-            completed_workers.append(worker)
+    # remove completed or failed workers
+    completed_workers = list(filter(lambda worker: worker.completed or worker.job.status in (JobStatus.Cancelled, JobStatus.Failed), worker_queue))
         
     for worker in completed_workers:
         worker_queue.remove(worker)

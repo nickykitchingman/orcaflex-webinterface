@@ -6,6 +6,15 @@ import threading
 
 lock = threading.Lock()
 
+def threadsafe(func):
+    def wrapper(*args, **kwargs):
+        with lock:
+            db.session.rollback()
+            func(*args, **kwargs)
+            db.session.commit()
+            
+    return wrapper
+
 @enum.unique
 class JobStatus(enum.IntEnum):
     Pending = 0
@@ -39,60 +48,38 @@ class Job(db.Model):
     def sim_filename(self):
         return f'{self.filename}.sim'
     
+    @threadsafe
     def set_status(self, status):
-        with lock:
-            db.session.rollback()
-            
-            self.status = status
-            db.session.commit()
+        self.status = status
     
+    @threadsafe
     def set_progress(self, progress):
-        with lock:
-            db.session.rollback()
-            
-            self.progress = progress
-            
-            db.session.commit()
+        self.progress = progress
     
+    @threadsafe
     def started(self):
-        with lock:
-            db.session.rollback()
-            
-            self.status = JobStatus.Running
-            self.progress = 'Queued'
-            db.session.commit()
+        self.status = JobStatus.Running
+        self.progress = 'Queued'
     
+    @threadsafe
     def completed(self, filename):   
-        with lock:
-            db.session.rollback()
+        self.status = JobStatus.Complete
+        self.progress = ''
             
-            self.status = JobStatus.Complete
-            self.progress = ''
-            db.session.commit()
-        
+    @threadsafe    
     def failed(self, progress):
-        with lock:
-            db.session.rollback()
-            
-            self.status = JobStatus.Failed
-            self.progress = progress
-            db.session.commit()
-        
-    def paused(self):
-        with lock:
-            db.session.rollback()
-            
-            self.status = JobStatus.Paused
-            self.progress = 'Paused'
-            db.session.commit()
+        self.status = JobStatus.Failed
+        self.progress = progress
     
+    @threadsafe    
+    def paused(self):
+        self.status = JobStatus.Paused
+        self.progress = 'Paused'
+    
+    @threadsafe
     def cancelled(self):
-        with lock:
-            db.session.rollback()
-            
-            self.status = JobStatus.Cancelled
-            self.progress = 'Cancelled'
-            db.session.commit()
+        self.status = JobStatus.Cancelled
+        self.progress = 'Cancelled'
     
     def running_or_complete(self):
         return self.status in (JobStatus.Running, JobStatus.Complete)
