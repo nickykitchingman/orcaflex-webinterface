@@ -53,15 +53,15 @@ const Upload = (props) => {
 				headers: { 'Authorization': `Bearer ${props.getToken()}` },
                 body: formData
             }).then(
-                response => {
-                    checkStatus(response);
-                    setMessage('Files uploaded successfully');
-                    navigate('/process');
-                }
-            ).catch(
+				response => checkStatus(response).json()
+			).then((data) => {
+				refreshToken(data, props.setToken)
+			}).catch(
                 error => {
                     setMessage('An error occurred. Please try again.');
                     console.error(error);
+					props.setToken(null);
+					navigate("/login");
                 }
             ),
             'upload-area'

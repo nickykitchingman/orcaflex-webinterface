@@ -17,7 +17,7 @@ jwt_manager = JWTManager(app)
 @app.after_request
 def refresh_expiring_jwts(response):
     try:
-        exp_timestamp = get_jwt()["exp"]
+        exp_timestamp = get_jwt()['exp']
         now = datetime.now(timezone.utc)
         target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
         
@@ -26,15 +26,17 @@ def refresh_expiring_jwts(response):
             data = response.get_json()
             
             if type(data) is dict:
-                data["token"] = access_token
+                data['token'] = access_token
                 response.data = json.dumps(data)
-                
-            set_access_cookies(response, access_token)
-        
+            elif data is None:
+                response.data = json.dumps({ 
+                    'token': access_token
+                })
+
         return response
         
     except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original respone
+        # Case where there is not a valid JWT. Just return the original response
         return response
 
 class FileSubmission(Resource):
@@ -107,7 +109,7 @@ class PauseJobs(Resource):
         content = request.json
         jobs = content['jobs']
         api.pause_jobs(jobs)
-    
+
 class StopJobs(Resource):
     
     @jwt_required()

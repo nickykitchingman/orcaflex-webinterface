@@ -34,7 +34,6 @@ const Login = (props) => {
 			.then((result) => {
 				const token = result.token;
 				props.setToken(token);
-				console.log(props.getToken());
 			})
 			.catch(
                 error => {

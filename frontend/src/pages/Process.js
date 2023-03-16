@@ -6,7 +6,7 @@ import 'font-awesome/css/font-awesome.min.css';
 import { trackPromise } from 'react-promise-tracker';
 
 import { JobStatus } from '../Constants';
-import { api_url, checkStatus } from '../Utility';
+import { api_url, checkStatus, refreshToken } from '../Utility';
 import ProcessButton from '../components/ProcessButton';
 import DownloadButton from '../components/DownloadButton';
 import ProcessPanel from '../components/ProcessPanel';
@@ -43,10 +43,11 @@ const Process = (props) => {
 				headers: { 'Authorization': `Bearer ${props.getToken()}` }
 			}
         ).then(
-            response => checkStatus(response, props.setToken).json()
-        ).then(
-            data => setJobs(data)
-        ).catch(
+            response => checkStatus(response).json()
+        ).then((data) => {
+			refreshToken(data, props.setToken);
+			setJobs(data);
+		}).catch(
             error => {
 				console.error(error);
 				props.setToken(null);
@@ -70,8 +71,11 @@ const Process = (props) => {
                 body: JSON.stringify({'jobs': ids})
             }
         ).then(
-            response => checkStatus(response, props.setToken).json()).then(
-            data => updateJobs(data.jobs)).catch(
+            response => checkStatus(response).json()
+        ).then((data) => {
+			refreshToken(data, props.setToken)
+			updateJobs(data.jobs);
+		}).catch(
             error => {
 				console.error(error);
 				props.setToken(null);
@@ -97,8 +101,10 @@ const Process = (props) => {
                 body: JSON.stringify({'job': jobId})
             }
         ).then(
-            response => checkStatus(response, props.setToken).json()
-        ).catch(
+            response => checkStatus(response).json()
+        ).then((data) => {
+			refreshToken(data, props.setToken)
+		}).catch(
             error => {
                 setFailed([jobId]);
                 console.error(error);
@@ -121,8 +127,10 @@ const Process = (props) => {
                 body: JSON.stringify({'jobs': ids})
             }
         ).then(
-            response => checkStatus(response, props.setToken).json()
-        ).catch(
+            response => checkStatus(response).json()
+        ).then((data) => {
+			refreshToken(data, props.setToken)
+		}).catch(
             error => {
                 console.error(error);
                 setFailed([ids]);
@@ -192,10 +200,13 @@ const Process = (props) => {
 			}
         ).then(
             response => {
-                checkStatus(response, props.setToken);
-                setJobs(runningJobs());
-            }
-        ).catch(
+				const res = checkStatus(response);
+				setJobs(runningJobs());
+				return res.json();
+			}
+        ).then((data) => {
+			refreshToken(data, props.setToken)
+		}).catch(
             error => {
 				console.error(error);
 				props.setToken(null);
@@ -219,10 +230,10 @@ const Process = (props) => {
                 body: JSON.stringify({ 'jobs': jobIds })
             }
         ).then(
-            response => {
-                checkStatus(response, props.setToken);
-            }
-        ).catch(
+            response => checkStatus(response).json()
+        ).then((data) => {
+			refreshToken(data, props.setToken)
+		}).catch(
             error => {
 				console.error(error);
 				props.setToken(null);
@@ -245,10 +256,10 @@ const Process = (props) => {
                 body: JSON.stringify({'jobs': jobIds})
             }
         ).then(
-            response => {
-                checkStatus(response, props.setToken);
-            }
-        ).catch(
+            response => checkStatus(response).json()
+        ).then((data) => {
+			refreshToken(data, props.setToken)
+		}).catch(
             error => {
 				console.error(error);
 				props.setToken(null);

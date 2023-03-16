@@ -1,4 +1,4 @@
-export const api_url = (url) => {
+export const api_url = url => {
     if (process.env.REACT_APP_API_URL) {
 		return new URL(url, process.env.REACT_APP_API_URL);
     } else {
@@ -6,14 +6,14 @@ export const api_url = (url) => {
     }
 }
 
-export const checkStatus = (response, setToken) => { 
-	if (response.body.token != null) {
-		setToken(response.json().token);
-	}
-	
+export const checkStatus = (response) => { 
     if (response.ok)  {
         return response;
     }
 
     throw new Error(`Error: status code ${response.status}`);
 }
+
+export const refreshToken = (json, setToken) => {
+	json.token && setToken(json.token);
+};
