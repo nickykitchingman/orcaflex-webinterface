@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import './Process.css';
 import 'font-awesome/css/font-awesome.min.css';
 import { trackPromise } from 'react-promise-tracker';
 
 import { JobStatus } from '../Constants';
-import { api_url, checkStatus } from '../Utility';
+import { api_url, checkStatus, refreshToken } from '../Utility';
 import ProcessButton from '../components/ProcessButton';
 import DownloadButton from '../components/DownloadButton';
 import ProcessPanel from '../components/ProcessPanel';
 
-const Process = () => {
-    
+const Process = (props) => {
+    const navigate = useNavigate();
     const [jobs, setJobs] = useState([]);
     
     const updateJob = newJob => {
@@ -36,54 +38,78 @@ const Process = () => {
     
     const fetchJobs = () => {
         fetch(
-            api_url('/jobs')
+            api_url(`/jobs`),
+            {
+                headers: { 'Authorization': `Bearer ${props.getToken()}` }
+            }
         ).then(
             response => checkStatus(response).json()
-        ).then(
-            data => setJobs(data)
-        ).catch(
-            error => console.error(error)
+        ).then((data) => {
+            refreshToken(data, props.setToken);
+            setJobs(data);
+        }).catch(
+            error => {
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
+            }
         );
     }
     
     const fetchRunning = () => {
         let ids = runningJobs().map(job => job.id);
+        
         if (ids.length == 0) {
             return;
         }
+        
         fetch(
             api_url('/jobs'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'jobs': ids})
             }
         ).then(
-            response => checkStatus(response).json()).then(
-            data => updateJobs(data.jobs)).catch(
-            error => console.error(error)
+            response => checkStatus(response).json()
+        ).then((data) => {
+            refreshToken(data, props.setToken)
+            updateJobs(data.jobs);
+        }).catch(
+            error => {
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
+            }
         );
     }
     
     const processJob = jobId => {  
         const job = findJob(jobId);
+        
         if (job.status == JobStatus.Running) {
             return;
         }
+        
         setRunning([jobId]);
+        
         fetch(
             api_url('/processjob'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'job': jobId})
             }
         ).then(
             response => checkStatus(response).json()
-        ).catch(
+        ).then((data) => {
+            refreshToken(data, props.setToken)
+        }).catch(
             error => {
                 setFailed([jobId]);
                 console.error(error);
+                props.setToken(null);
+                navigate("/login");
             }
         );
     }
@@ -97,15 +123,19 @@ const Process = () => {
             api_url('/processjobs'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'jobs': ids})
             }
         ).then(
             response => checkStatus(response).json()
-        ).catch(
+        ).then((data) => {
+            refreshToken(data, props.setToken)
+        }).catch(
             error => {
                 console.error(error);
                 setFailed([ids]);
+                props.setToken(null);
+                navigate("/login");
             }
         )
     }
@@ -135,7 +165,7 @@ const Process = () => {
             api_url('/downloadjob'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'job': jobId})
             }
         ).then(
@@ -154,25 +184,38 @@ const Process = () => {
                 }
             }
         ).catch(
-           error => console.error(error)
+           error => {
+                console.error(error)
+                props.setToken(null);
+                navigate("/login");
+           }
         ), `download-${jobId}`
     );
     
     const clearJobs = () => {        
         fetch(
-            api_url('/clearjobs')
+            api_url('/clearjobs'),
+            {
+                headers: { 'Authorization': `Bearer ${props.getToken()}` }
+            }
         ).then(
             response => {
-                checkStatus(response);
+                const res = checkStatus(response);
                 setJobs(runningJobs());
+                return res.json();
             }
-        ).catch(
-            error => console.error(error)
+        ).then((data) => {
+            refreshToken(data, props.setToken)
+        }).catch(
+            error => {
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
+            }
         );
     };
     
     const pauseJobs = () => {
-        console.log("test")
         let jobIds = runningJobs().map(job => job.id);
         
         if (jobs.length == 0) {
@@ -183,15 +226,19 @@ const Process = () => {
             api_url('/pausejobs'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({ 'jobs': jobIds })
             }
         ).then(
-            response => {
-                checkStatus(response);
+            response => checkStatus(response).json()
+        ).then((data) => {
+            refreshToken(data, props.setToken)
+        }).catch(
+            error => {
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
             }
-        ).catch(
-            error => console.error(error)
         );
     }
     
@@ -205,15 +252,19 @@ const Process = () => {
             api_url('/stopjobs'),
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
                 body: JSON.stringify({'jobs': jobIds})
             }
         ).then(
-            response => {
-                checkStatus(response);
+            response => checkStatus(response).json()
+        ).then((data) => {
+            refreshToken(data, props.setToken)
+        }).catch(
+            error => {
+                console.error(error);
+                props.setToken(null);
+                navigate("/login");
             }
-        ).catch(
-            error => console.error(error)
         );
     };
 

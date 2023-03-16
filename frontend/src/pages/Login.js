@@ -20,22 +20,22 @@ const Login = (props) => {
 
         const username = e.target.elements['username'].value;
         const password = e.target.elements['password'].value;
-
+        
         trackPromise(
             fetch(api_url('/login'), {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json',},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     'username': username, 
                     'password': password
                 })
-            }).then(
-                response => {
-                    checkStatus(response);
-                    props.setState(true);
-                    setMessage('Login successful!')
-                }
-            ).catch(
+            })
+            .then((response) => response.json())
+            .then((result) => {
+                const token = result.token;
+                props.setToken(token);
+            })
+            .catch(
                 error => {
                     setMessage('Invalid login!');
                     console.error(error);
@@ -48,10 +48,10 @@ const Login = (props) => {
     };
     
     useEffect(() => {
-        if (props.getState()) {
+        if (props.signedIn()) {
             navigate('/home');
         }
-    }, [props.getState])
+    }, [props.getToken])
 
     return (
         <div id="login-page">

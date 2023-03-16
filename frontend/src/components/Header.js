@@ -3,7 +3,7 @@ import userState from '../UserState';
 
 const Header = (props) => {
     const loginOrSignout = () => {
-        if (props.getState()) {
+        if (props.signedIn()) {
             return <li><a href="/signout">Signout</a></li>;
         } else {
             return <li><a href="/login">Login</a></li>;
@@ -11,11 +11,11 @@ const Header = (props) => {
     }
 
     const upload = () => {
-        return props.getState() && <li><a href="/upload">Upload</a></li>;
+        return props.signedIn() && <li><a href="/upload">Upload</a></li>;
     }
 
     const process = () => {
-        return props.getState() && <li><a href="/process">Process</a></li>;
+        return props.signedIn() && <li><a href="/process">Process</a></li>;
     }
 
     return (    
@@ -27,7 +27,7 @@ const Header = (props) => {
                     { upload() }
                     { process() }
                     { loginOrSignout() }
-                    { !props.getState() && <li><a href="/signup">Signup</a></li> }
+                    { !props.signedIn() && <li><a href="/signup">Signup</a></li> }
                 </ul>
             </div>            
             <div className="break"></div>

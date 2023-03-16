@@ -1,20 +1,25 @@
 import { useState } from 'react';
 
 const userState = () => {
-    const [userState, setUserState] = useState(localStorage.getItem("user-logged-in") === 'true');
+    const [orcinaWebToken, setOrcinaWebToken] = useState(localStorage.getItem("orcinaWebToken"));
 
-    const getState = () => {
-        return userState;
+    const getToken = () => {
+        return orcinaWebToken;
     };
 
-    const setState = state => {
-        localStorage.setItem("user-logged-in", state);
-        setUserState(state);
+    const setToken = (token) => {
+        localStorage.setItem("orcinaWebToken", token);
+        setOrcinaWebToken(token);
     };
     
-    return { 
-        getState: getState,
-        setState: setState
+    const signedIn = () => {
+        return orcinaWebToken != null && orcinaWebToken != 'null';
+    }
+    
+    return {
+        getToken: getToken,
+        setToken: setToken,
+        signedIn: signedIn
     };
 };
 

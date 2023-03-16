@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
 
 import LoadingDots from '../components/LoadingDots';
-import { api_url } from '../Utility';
+import { api_url, refreshToken } from '../Utility';
 
-const Upload = () => {
+const Upload = (props) => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
@@ -31,31 +31,38 @@ const Upload = () => {
         e.preventDefault();
         const files = e.target.elements['file'].files;
         const formData = new FormData();
+        
         if (files.length === 0) {
             setMessage("Please select a file.");
             return;    
         }
+        
         for (let i = 0; i < files.length; i++) {
             if (!checkValid(files[i].name)) {
                 return;
             }
+            
             formData.append('files', files[i]);
         }
+
         setMessage('');
+        
         trackPromise(
-            fetch(api_url('/files'), {
+            fetch(api_url(`/files`), {
                 method: 'POST',
+                headers: { 'Authorization': `Bearer ${props.getToken()}` },
                 body: formData
             }).then(
-                response => {
-                    checkStatus(response);
-                    setMessage('Files uploaded successfully');
-                    navigate('/process');
-                }
-            ).catch(
+                response => checkStatus(response).json()
+            ).then((data) => {
+                refreshToken(data, props.setToken);
+                navigate('/process');
+            }).catch(
                 error => {
                     setMessage('An error occurred. Please try again.');
                     console.error(error);
+                    props.setToken(null);
+                    navigate("/login");
                 }
             ),
             'upload-area'

@@ -12,7 +12,7 @@ import { RouterError } from '../pages/Error'
 
 const Router = (props) => {
     const requireLogin = (normal) => {
-        if (props.getState()) {
+        if (props.signedIn()) {
             return normal
         } else {
             return <Navigate to="/login" />
@@ -33,27 +33,27 @@ const Router = (props) => {
                 />
                 <Route 
                     path="/upload" 
-                    element={requireLogin(<Upload />)}  
+                    element={requireLogin(<Upload getToken={props.getToken} setToken={props.setToken} />)}  
                     errorElement={<RouterError />}
                 />     
                 <Route 
                     path="/process" 
-                    element={requireLogin(<Process />)}  
+                    element={requireLogin(<Process getToken={props.getToken} setToken={props.setToken} />)}  
                     errorElement={<RouterError />}
                 />    
                 <Route
                     path="/login"
-                    element={<Login getState={props.getState} setState={props.setState} />}
+                    element={<Login getToken={props.getToken} setToken={props.setToken} signedIn={props.signedIn} />}
                     errorElement={<RouterError />}
                 />
                 <Route
                     path="/signout"
-                    element={<Signout getState={props.getState} setState={props.setState} />}
+                    element={<Signout getToken={props.getToken} setToken={props.setToken} signedIn={props.signedIn} />}
                     errorElement={<RouterError />}
                 />
                 <Route
                     path="/signup"
-                    element={<Signup getState={props.getState} setState={props.setState} />}
+                    element={<Signup getToken={props.getToken} setToken={props.setToken} signedIn={props.signedIn} />}
                     errorElement={<RouterError />}
                 />
             </Routes>        
