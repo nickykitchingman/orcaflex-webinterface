@@ -163,7 +163,7 @@
 
     /* text
      */
-    --color-text                   : var(--color-gray-19);
+    --color-text                   : var(--color-white);
     --color-text-dark              : var(--color-black);
     --color-text-light             : var(--color-gray-14);
     --color-placeholder            : var(--color-gray-14);
