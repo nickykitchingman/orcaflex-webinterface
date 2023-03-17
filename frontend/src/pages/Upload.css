@@ -1,7 +1,16 @@
+.page {
+	min-height: 84vh;
+	background-color: rgb(30, 30, 35);
+}
+
+.page #heading {
+	color: white;
+}
+
 input[type=file]::file-selector-button {
 	margin-right: 20px;
 	border: none;
-	background: var(--color-1);
+	background: hsla(34, 60%, 57%, 1);
 	padding: 10px 20px;
 	border-radius: 10px;
 	color: #fff;
@@ -10,7 +19,7 @@ input[type=file]::file-selector-button {
 }
 
 input[type=file]::file-selector-button:hover {
-    background-color: var(--color-2);
+    background-color: hsla(214, 60%, 57%, 1);
 }
 
 .drop-container {
@@ -33,7 +42,7 @@ input[type=file]::file-selector-button:hover {
 }
 
 .drop-container:hover {
-    border-color: var(--color-gray-13);
+    border-color: rgb(150, 150, 150);
 }
 
 .drop-title {
@@ -54,5 +63,5 @@ input[type=file]::file-selector-button:hover {
 }
 
 .drop-container:hover .or {
-	color: var(--color-gray-13);
+	color: rgb(150, 150, 150);
 }

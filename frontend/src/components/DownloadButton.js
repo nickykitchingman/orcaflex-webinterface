@@ -14,7 +14,7 @@ export default function DownloadButton(props) {
     
     return (
         <a className="download-btn" onClick={props.onClick}>
-            <i id="download-icon" className="fa fa-download"></i>
+            <i id="icon" className="fa fa-download"></i>
         </a>
     );
 }

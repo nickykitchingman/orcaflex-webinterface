@@ -282,7 +282,7 @@ const Process = (props) => {
     
 	const noJobs = () => {
         if (jobs.length == 0) {
-            return (<div id="no-jobs">No active jobs</div>);
+            return (<div id="no-jobs">No active jobs!</div>);
         }
 		
 		return null;

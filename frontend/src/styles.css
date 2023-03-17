@@ -111,7 +111,7 @@
     --color-1-lightest             : hsla(34, 60%, 97%, 1);
     --color-1-lighter              : hsla(34, 60%, 77%, 1);
     --color-1-light                : hsla(34, 60%, 67%, 1);
-    --color-1-dark                 : hsla(34, 60%, 47%, 1);
+    --color-1-dark                 : rgb(30, 30, 35);
     --color-1-darker               : hsla(34, 60%, 37%, 1);
     --color-1-darkest              : hsla(34, 60%, 27%, 1);
     --color-2-lightest             : hsla(214, 60%, 87%, 1);
@@ -1371,7 +1371,7 @@ h6,
 .h6 {
     font-family            : var(--font-2);
     font-weight            : 600;
-    color                  : white;
+    color                  : var(--color-text-dark);
     font-variant-ligatures : common-ligatures;
     text-rendering         : optimizeLegibility;
     letter-spacing         : -.010em;
