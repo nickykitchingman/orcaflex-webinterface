@@ -38,8 +38,13 @@
 	color: var(--color-1-light);
 }
 
+.btn-container {
+	display: flex;
+    margin: 0 10px;
+	padding: 10px;
+	gap: 10px;
+}
+
 #extension {
-	background-color: var(--color-btn);
-	color: var(--color-text-light);
-	font-size: 18px;
+	color: var(--color-gray-15);
 }

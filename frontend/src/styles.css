@@ -170,7 +170,8 @@
 
     /* buttons
      */
-    --color-btn                    : rgb(20, 20, 25); /*var(--color-gray-6);*/
+    --color-btn                    : rgb(20, 20, 25);
+	--color-btn-lighter 			   : rgb(25, 25, 30);
     --color-btn-text               : var(--color-white);
     --color-btn-hover              : var(--color-gray-8);
     --color-btn-hover-text         : var(--color-gray-19);

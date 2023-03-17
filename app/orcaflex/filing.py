@@ -100,8 +100,8 @@ def get_sim_path(job_id):
     
     return path, job.sim_filename()
 
-def clear_jobs(uid):
-    for job in get_all_jobs(uid):
+def clear_jobs(uid, ids):
+    for job in list(filter(lambda job: job.id in ids, get_all_jobs(uid))):
         if job.status == JobStatus.Running:
             continue
     
