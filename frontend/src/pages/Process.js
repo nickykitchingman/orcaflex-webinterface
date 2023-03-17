@@ -274,7 +274,7 @@ const Process = (props) => {
     const displayJob = job => (
         <tr key={job.id}>
             <td className="process-col" colSpan={job.status==JobStatus.Complete?"1":"2"}>
-                <ProcessButton resetJobs={resetJobs} getToken={props.getToken} setToken={props.setToken} onClick={() => processJob(job.id)} job={job}/>
+                <ProcessButton refreshJobs={refreshJobs} getToken={props.getToken} setToken={props.setToken} onClick={() => processJob(job.id)} job={job}/>
             </td>
             {job.status == JobStatus.Complete &&
             (<td className="download-col">
@@ -291,7 +291,7 @@ const Process = (props) => {
 		return null;
 	}
 	
-	const resetJobs = () => {
+	const refreshJobs = () => {
 		fetchJobs();
 	};
 	
