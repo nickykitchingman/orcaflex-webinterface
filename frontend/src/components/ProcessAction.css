@@ -1,0 +1,11 @@
+.process-name {
+	background-color: var(--color-btn-lighter);
+	width: 100px;
+	text-align: center;
+	color: var(--color-text);
+	transition: 0.1s;
+}
+
+.process-name:hover {
+	color: var(--color-text-hover);
+}
