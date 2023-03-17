@@ -9,17 +9,6 @@
     align-items: center; 
 }
 
-.process-btn:hover .highlight {
-	background-color: var(--color-2);
-	color: var(--color-2);
-	width: 1%;
-}
-
-#extension {
-	display: inline-block;
-	color: gray;
-}
-
 .progress-message {
 	background-color: var(--color-btn);
     float: right;
@@ -40,4 +29,10 @@
 
 .filename {
 	background-color: var(--color-btn);
+	transition: 0.15s;
+}
+
+.process-btn:hover .filename {
+	padding: 0 15px;
+	color: var(--color-1-light);
 }

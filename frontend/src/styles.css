@@ -119,7 +119,7 @@
     --color-2-light                : hsla(214, 60%, 67%, 1);
     --color-2-dark                 : hsla(214, 60%, 57%, 1);
     --color-2-darker               : hsla(214, 60%, 47%, 1);
-    --color-2-darkest               : hsla(214, 60%, 37%, 1);
+    --color-2-darkest              : hsla(214, 60%, 37%, 1);
 
     /* feedback colors
      * color-error(#ffd1d2), color-success(#c8e675), 
@@ -170,8 +170,8 @@
 
     /* buttons
      */
-    --color-btn                    : var(--color-gray-6);
-    --color-btn-text               : var(--color-black);
+    --color-btn                    : rgb(20, 20, 25); /*var(--color-gray-6);*/
+    --color-btn-text               : var(--color-white);
     --color-btn-hover              : var(--color-gray-8);
     --color-btn-hover-text         : var(--color-gray-19);
     --color-btn-primary            : var(--color-1);
@@ -191,7 +191,7 @@
 
     /* others
      */
-    --color-body                   : white;
+    --color-body                   : rgb(30, 30, 35);
     --color-border                 : rgba(0, 0, 0, .08);
     --border-radius                : 3px;
 }

@@ -8,6 +8,7 @@
     height: 100%;
     display: flex;
     align-items: center;    
+	transition: 0.1s;
 }
 
 .download-btn:hover {
@@ -16,8 +17,18 @@
 }
 
 .download-loading {
-    background-color: var(--color-2-lighter); /*var(--color-2-lighter); */
+    background-color: var(--color-2-lighter);
     border: none;     
     height: 100%;
     padding: 1rem;
 }
+
+#icon {
+	background-color: var(--color-2-light);
+	transition: 0.1s;
+}
+
+.download-btn:hover #icon {
+    background-color: var(--color-2);
+}
+
