@@ -129,22 +129,26 @@ def run_jobs(jobs, paused_jobs):
                 model.dynamicsProgressHandler = dynamics_progress_handler
                 model.progressHandler = percent_progress_handler
                 
-                load_path = os.path.join(filing.LOAD_PATH, job.full_filename())
+                user_path = os.path.join(filing.LOAD_PATH if job.status != JobStatus.Paused else filing.PAUSED_PATH, job.user_id)
 
-                if is_paused:      
-                    load_path = os.path.join(filing.PAUSED_PATH, job.sim_filename())
+                if not os.path.exists(user_path):
+                    os.mkdir(user_path)
+                
+                load_path = os.path.join(user_path, job.full_filename())
 
-                job.set_progress('Loading')   
+                job.set_progress('Loading')
 
                 model.LoadData(load_path)
                 job.set_progress('Running')
 
                 model.RunSimulation()
+                
+                user_path = os.path.join(filing.SAVE_PATH if job.status != JobStatus.Paused else filing.PAUSED_PATH, job.user_id)
 
-                path = os.path.join(filing.SAVE_PATH, job.sim_filename())
+                if not os.path.exists(user_path):
+                    os.mkdir(user_path)
 
-                if job.status == JobStatus.Paused:
-                    path = os.path.join(filing.PAUSED_PATH, job.sim_filename())
+                path = os.path.join(user_path, job.sim_filename())
 
                 job.set_progress('Saving')
                 model.SaveSimulation(path)      
@@ -198,7 +202,7 @@ def process_jobs(job_ids):
     if len(jobs) == 0:
         return []
         
-    run_jobs([job for job in jobs], paused_jobs)
+    run_jobs([job for job in jobs], paused_jobs)  
 
     return jobs
     
@@ -218,3 +222,13 @@ def stop_jobs(job_ids):
     
     worker_queue.clear()
     
+with app.app_context():
+    json_data = filing.get_all_jobs_json()
+    print(json_data)
+    
+    jsonified = json.loads(json_data)
+    
+    for value in jsonified:
+        job = db.session.get(Job, value['id'])
+        
+        run_jobs([job], []) 
