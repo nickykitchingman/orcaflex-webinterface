@@ -75,7 +75,7 @@ def get_jobs_json(ids):
     
 def get_all_jobs(uid_filter = -1):
     if uid_filter >= 0:
-        return Job.query.filter_by(user_id = uid_filter)
+        return Job.query.filter_by(user_id = uid_filter).all()
 
     return Job.query.all()
 
@@ -83,6 +83,12 @@ def get_all_jobs_json(uid_filter = -1):
     jobs = get_all_jobs(uid_filter)
     dicts = [job.get_dict() for job in jobs]
     return json.dumps(dicts)
+    
+def get_all_running_jobs(uid_filter = -1):
+    if uid_filter != -1:
+        return Job.query.filter_by(user_id = uid_filter, status=JobStatus.Running).all()
+
+    return Job.query.filter_by(status=JobStatus.Running).all()
     
 def get_sim_path(job_id):
     job = db.session.get(Job, job_id)

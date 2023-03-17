@@ -221,14 +221,3 @@ def stop_jobs(job_ids):
     Job.stop(job_ids)
     
     worker_queue.clear()
-    
-with app.app_context():
-    json_data = filing.get_all_jobs_json()
-    print(json_data)
-    
-    jsonified = json.loads(json_data)
-    
-    for value in jsonified:
-        job = db.session.get(Job, value['id'])
-        
-        run_jobs([job], []) 
