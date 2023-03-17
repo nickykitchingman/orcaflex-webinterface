@@ -22,3 +22,6 @@ instance/files/*
 *.dat
 *.yml
 *.sim
+
+# env
+.env

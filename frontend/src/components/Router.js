@@ -33,12 +33,12 @@ const Router = (props) => {
                 />
                 <Route 
                     path="/upload" 
-                    element={requireLogin(<Upload getToken={props.getToken} setToken={props.setToken} />)}  
+                    element={requireLogin(<Upload getToken={props.getToken} setToken={props.setToken}  signedIn={props.signedIn} />)}  
                     errorElement={<RouterError />}
                 />     
                 <Route 
                     path="/process" 
-                    element={requireLogin(<Process getToken={props.getToken} setToken={props.setToken} />)}  
+                    element={requireLogin(<Process getToken={props.getToken} setToken={props.setToken}  signedIn={props.signedIn} />)}  
                     errorElement={<RouterError />}
                 />    
                 <Route

@@ -5,6 +5,10 @@ import { trackPromise } from 'react-promise-tracker';
 import LoadingDots from '../components/LoadingDots';
 import { api_url, refreshToken } from '../Utility';
 
+import './Upload.css';
+
+import './Upload.css';
+
 const Upload = (props) => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
@@ -17,6 +21,7 @@ const Upload = (props) => {
             setMessage("Invalid file type. Please select a .dat, .sim, or .yml file.");
             return false;
         }
+		
         return true;
     };
     
@@ -24,19 +29,21 @@ const Upload = (props) => {
         if (reponse.ok)  {
             return reponse;
         }
+		
         throw new Error(`Error: status code ${reponse.status}`);
     }
 
     const handleSubmit = e => {
         e.preventDefault();
+		
         const files = e.target.elements['file'].files;
         const formData = new FormData();
-        
-        if (files.length === 0) {
+		
+		if (files.length === 0) {
             setMessage("Please select a file.");
             return;    
         }
-        
+
         for (let i = 0; i < files.length; i++) {
             if (!checkValid(files[i].name)) {
                 return;
@@ -46,7 +53,7 @@ const Upload = (props) => {
         }
 
         setMessage('');
-        
+		
         trackPromise(
             fetch(api_url(`/files`), {
                 method: 'POST',
@@ -69,17 +76,40 @@ const Upload = (props) => {
         );
     };
 
+	const dropHandler = e => {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		document.querySelector('input').files = e.dataTransfer.files;
+	};
+
+	const dragHandler = e => {
+		e.preventDefault();
+		e.stopPropagation();
+	};
+
     return (
-        <div id="upload-page">      
-            <h1>File submission portal</h1>
-            <div className="space-1"></div>
+        <div className="page">      
+            <h1 id="heading">Upload Files</h1>
+			
+            <div className="message">{message}</div>
+			
             <form onSubmit={handleSubmit}>
-                <input type="file" id="file" name="file" accept=".dat,.yml,.sim" multiple />                
+				<div id="form-container">
+				
+					<div htmlFor="files" className="drop-container" onDrop={dropHandler} onDragOver={dragHandler}>
+						<span className="drop-title">Drop Files Here</span>
+						<div className="or">or</div>
+						<input type="file" name="file" accept=".dat, .yml, .sim" multiple />
+					</div>
+					
+				</div>
+				
                 <div className="space-1"></div>
                 <input type="submit" value="Upload" />
             </form>
+			
             <LoadingDots area="upload-area"/>
-            <div id="message">{message}</div>
         </div>
     );
 };

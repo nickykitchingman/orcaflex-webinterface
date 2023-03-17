@@ -9,17 +9,9 @@
     align-items: center; 
 }
 
-.process-btn:hover {
-    background-color: var(--color-btn-hover);
-    color: var(--color-btn-hover-text);
-}
-
-#extension {
-	display: inline-block;
-	color: gray;
-}
-
 .progress-message {
+	background-color: var(--color-btn);
+	color: var(--color-btn-text);
     float: right;
     margin-left: auto;
     font-size: 18px;
@@ -27,10 +19,27 @@
 }
 
 .status-symbol {
+	background-color: var(--color-btn);
     float: right;
     margin-left: 2rem;
     width: 4rem;
     height: 4rem;
     display: flex;
-    align-items: center;    
+    align-items: center;
+}
+
+.filename {
+	background-color: var(--color-btn);
+	transition: 0.15s;
+}
+
+.process-btn:hover .filename {
+	padding: 0 15px;
+	color: var(--color-1-light);
+}
+
+#extension {
+	background-color: var(--color-btn);
+	color: var(--color-text-light);
+	font-size: 18px;
 }

@@ -12,13 +12,6 @@ li.home-link {
     margin-right: 4rem;
 }
 
-a:focus,
-a:hover,
-a:active {
+a:focus, a:hover, a:active {
     color : var(--color-1-darker);
-}
-
-div.break {
-    height: 1px; 
-    background-color: var(--color-gray-11)
 }

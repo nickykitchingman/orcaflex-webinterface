@@ -1,3 +1,17 @@
+#no-jobs {
+	color: white;
+}
+
+.panel-container {
+	display: flex;
+	justify-content: center;
+	flex-direction: row;
+}
+
+.panel-btn {
+	margin: 5px;
+}
+
 li.vertical {
     display: block;    
 }
