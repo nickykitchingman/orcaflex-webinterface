@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron')
+const env = require('dotenv').config()
 
 app.whenReady().then(() => {
 	
@@ -22,6 +23,6 @@ app.whenReady().then(() => {
 	mainWindow.setMenu(null);
 	
 	// load web interface
-	mainWindow.loadURL('http://localhost:3000');
+	mainWindow.loadURL(process.env.REACT_APP_URL);
 	
 });
