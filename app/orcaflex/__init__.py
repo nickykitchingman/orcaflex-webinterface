@@ -18,6 +18,7 @@ threading.Thread(target=update, args=[], daemon=True, name="Worker-Update").star
     
 with app.app_context():
     jobs = filing.get_all_running_jobs()
-    app.logger.info(f'Failing {len(jobs)} jobs')
+    if len(jobs) > 0:
+        app.logger.info(f'Failing {len(jobs)} jobs')
     for job in jobs:
         job.failed('Server restarted')
