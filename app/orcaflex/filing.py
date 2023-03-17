@@ -96,7 +96,7 @@ def get_sim_path(job_id):
     if job is None or job.status != JobStatus.Complete:
         return None
         
-    path = os.path.join(os.path.join(filing.SAVE_PATH, job.user_id), job.sim_filename())
+    path = os.path.join(os.path.join(SAVE_PATH, job.user_id), job.sim_filename())
     
     return path, job.sim_filename()
 
@@ -107,8 +107,8 @@ def clear_jobs(uid):
     
         # Check if a duplicate job uses this filename
         if Job.query.filter(Job.id != job.id, Job.filename == job.filename).first() is None:
-            load_file = os.path.join(os.path.join(filing.LOAD_PATH, job.user_id), job.full_filename())
-            save_file = os.path.join(os.path.join(filing.SAVE_PATH, job.user_id), job.sim_filename())
+            load_file = os.path.join(os.path.join(LOAD_PATH, job.user_id), job.full_filename())
+            save_file = os.path.join(os.path.join(SAVE_PATH, job.user_id), job.sim_filename())
             
             try:
                 if job.filename != '':
