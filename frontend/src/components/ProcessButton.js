@@ -47,6 +47,7 @@ export default function ProcessButton(props) {
         ).then(
             response => {
 				const res = checkStatus(response);
+			
                 props.refreshJobs();
                 return res.json();
 			}
@@ -72,7 +73,7 @@ export default function ProcessButton(props) {
         ).then(
             response => {
 				const res = checkStatus(response);
-                props.resetJobs();
+                props.refreshJobs();
                 return res.json();
 			}
         ).then((data) => {
