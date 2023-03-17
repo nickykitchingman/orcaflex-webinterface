@@ -7,6 +7,8 @@ import { api_url, refreshToken } from '../Utility';
 
 import './Upload.css';
 
+import './Upload.css';
+
 const Upload = () => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
@@ -39,7 +41,7 @@ const Upload = () => {
             setMessage("Please select a file.");
             return;    
         }
-        
+
         for (let i = 0; i < files.length; i++) {
             if (!checkValid(files[i].name)) {
                 return;

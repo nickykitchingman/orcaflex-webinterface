@@ -11,6 +11,7 @@
 
 .progress-message {
 	background-color: var(--color-btn);
+	color: var(--color-btn-text);
     float: right;
     margin-left: auto;
     font-size: 18px;
@@ -35,4 +36,10 @@
 .process-btn:hover .filename {
 	padding: 0 15px;
 	color: var(--color-1-light);
+}
+
+#extension {
+	background-color: var(--color-btn);
+	color: var(--color-text-light);
+	font-size: 18px;
 }
