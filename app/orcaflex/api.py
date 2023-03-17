@@ -6,8 +6,55 @@ import os
 import json
 import threading
 from OrcFxAPI import Model, DLLError
+import time
+
+worker_queue = []
+
+class Worker:
+    def __init__(self, job, target, args):
+        # the job is processing / has processed
+        self.active = False
+        
+        # the job has finished processing
+        self.completed = False
+            
+        self.target = target
+        self.args = args
+        
+        self.job = job
+
+    def deploy(self):
+        def wrapper(*args):
+            self.active = True
+            self.target(*args)
+            self.completed = True
+
+        threading.Thread(target=wrapper, args=self.args).start()
+
+def update_workers():
+    if len(worker_queue) == 0:
+        return
+        
+    # remove completed or failed workers
+    completed_workers = list(filter(lambda worker: worker.completed or worker.job.status in (JobStatus.Cancelled, JobStatus.Failed), worker_queue))
+        
+    for worker in completed_workers:
+        worker_queue.remove(worker)
+        
+    active_count = len(list(filter(lambda worker: worker.active, worker_queue)))
+
+    if active_count < app.config['MAXIMUM_ACTIVE_WORKERS']:
+        for worker in worker_queue:
+            if active_count >= app.config['MAXIMUM_ACTIVE_WORKERS']:
+                break
+                
+            if not worker.active:
+                worker.deploy()
+                active_count += 1
 
 def get_job(model):
+    db.session.rollback()
+    
     filename = model.latestFileName
     name = os.path.basename(filename)
     base, _ = os.path.splitext(name)
@@ -21,7 +68,9 @@ def get_job(model):
 
     return job
 
-def get_running_job(model):
+def get_running_job(model): 
+    db.session.rollback()
+    
     filename = model.latestFileName
     name = os.path.basename(filename)
     base, _ = os.path.splitext(name)
@@ -43,6 +92,7 @@ def statics_progress_handler(model, progress):
         return True  # Kill job
 
     job.set_progress(progress)
+    
     return False
     
 def dynamics_progress_handler(model, time, start, stop):
@@ -118,11 +168,12 @@ def run_jobs(jobs, paused_jobs):
     for job in jobs:  
         try:
             is_paused = job.id in paused_jobs
-            threading.Thread(target=run_job, args=[job.id, is_paused, app.app_context()]).start()
+            
+            worker_queue.append(Worker(job=job, target=run_job, args=[job.id, is_paused, app.app_context()]))
         except Exception as e:
             job.failed('Server error')
             app.logger.error(f'{e}')
-        
+  
 def process_jobs(job_ids):
     jobs = []
     paused_jobs = set()
@@ -136,8 +187,10 @@ def process_jobs(job_ids):
             if job is not None and job.status != JobStatus.Running and not is_duplicate(job):
                 if job.status == JobStatus.Paused:
                     paused_jobs.add(job_id)
+                    
                 job.started()
                 jobs.append(job)
+                
         except Exception as e:
             job.failed('Server error')
             app.logger.error(f'{e}')
@@ -146,7 +199,7 @@ def process_jobs(job_ids):
         return []
         
     run_jobs([job for job in jobs], paused_jobs)
-        
+
     return jobs
     
 def process_job(job_id):
@@ -158,26 +211,10 @@ def process_job(job_id):
     return jobs[0]
 
 def pause_jobs(job_ids):
-    jobs = Job.query.filter(
-        Job.id.in_(job_ids)
-    ).update(
-        values={
-            'status': JobStatus.Paused,
-            'progress': 'Paused'
-        }
-    )
-    
-    db.session.commit()
+    Job.pause(job_ids)
 
 def stop_jobs(job_ids):
-    jobs = Job.query.filter(
-        Job.id.in_(job_ids)
-    ).update(
-        values={
-            'status': JobStatus.Cancelled, 
-            'progress': 'Cancelled'
-        }
-    )
+    Job.stop(job_ids)
     
-    db.session.commit()
+    worker_queue.clear()
     
