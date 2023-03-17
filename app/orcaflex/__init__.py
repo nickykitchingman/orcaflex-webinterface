@@ -15,3 +15,10 @@ def update():
         sleep(app.config['WORKER_UPDATE_INTERVAL'])
 
 threading.Thread(target=update, args=[], daemon=True, name="Worker-Update").start()
+    
+with app.app_context():
+    jobs = filing.get_all_running_jobs()
+    if len(jobs) > 0:
+        app.logger.info(f'Failing {len(jobs)} jobs')
+    for job in jobs:
+        job.failed('Server restarted')
