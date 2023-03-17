@@ -21,6 +21,7 @@ const Upload = (props) => {
             setMessage("Invalid file type. Please select a .dat, .sim, or .yml file.");
             return false;
         }
+		
         return true;
     };
     
@@ -28,6 +29,7 @@ const Upload = (props) => {
         if (reponse.ok)  {
             return reponse;
         }
+		
         throw new Error(`Error: status code ${reponse.status}`);
     }
 
@@ -74,6 +76,18 @@ const Upload = (props) => {
         );
     };
 
+	const dropHandler = e => {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		document.querySelector('input').files = e.dataTransfer.files;
+	};
+
+	const dragHandler = e => {
+		e.preventDefault();
+		e.stopPropagation();
+	};
+
     return (
         <div className="page">      
             <h1 id="heading">Upload Files</h1>
@@ -82,11 +96,13 @@ const Upload = (props) => {
 			
             <form onSubmit={handleSubmit}>
 				<div id="form-container">
-					<label htmlFor="files" className="drop-container">
+				
+					<div htmlFor="files" className="drop-container" onDrop={dropHandler} onDragOver={dragHandler}>
 						<span className="drop-title">Drop Files Here</span>
 						<div className="or">or</div>
 						<input type="file" name="file" accept=".dat, .yml, .sim" multiple />
-					</label>
+					</div>
+					
 				</div>
 				
                 <div className="space-1"></div>

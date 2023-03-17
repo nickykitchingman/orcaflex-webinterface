@@ -12,7 +12,7 @@ export default function StatusSymbol(props) {
         case JobStatus.Pending:
             return (<i className="fa fa-circle-thin status-pending"></i>)
         case JobStatus.Running:
-            return (<Oval id="spinner" width="100%" height="100%" color="var(--color-notice)" secondaryColor="var(--color-1-darker)" strokeWidth={5}/>)
+            return (<Oval width="100%" height="100%" color="var(--color-notice)" secondaryColor="var(--color-1-darker)" strokeWidth={5}/>)
         case JobStatus.Complete:
             return (<i className="fa fa-circle status-complete"></i>)
         case JobStatus.Failed:
