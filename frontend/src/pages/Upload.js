@@ -9,7 +9,7 @@ import './Upload.css';
 
 import './Upload.css';
 
-const Upload = () => {
+const Upload = (props) => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
@@ -82,7 +82,7 @@ const Upload = () => {
 			
             <form onSubmit={handleSubmit}>
 				<div id="form-container">
-					<label for="files" className="drop-container">
+					<label htmlFor="files" className="drop-container">
 						<span className="drop-title">Drop Files Here</span>
 						<div className="or">or</div>
 						<input type="file" name="file" accept=".dat, .yml, .sim" multiple />
