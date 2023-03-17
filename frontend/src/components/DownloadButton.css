@@ -17,13 +17,15 @@
 }
 
 .download-loading {
-    background-color: var(--color-2-lighter); /*var(--color-2-lighter); */
+    background-color: var(--color-2-lighter);
     border: none;     
     height: 100%;
     padding: 1rem;
+	display: flex; 
+	align-items: center;
 }
 
-#icon {
+#download-icon {
 	background-color: var(--color-2-light);
 	transition: 0.1s;
 }
