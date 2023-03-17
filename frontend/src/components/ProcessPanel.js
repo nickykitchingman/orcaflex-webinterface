@@ -9,19 +9,19 @@ export default function DownloadButton(props) {
         <div>
             <div className="panel-container">
                 <a className="panel-btn" onClick={props.onClear}>
-                    Clear
+                    Clear All
                 </a>
                 <a className="panel-btn" onClick={props.onPause}>
-                    Pause
+                    Pause All
                 </a>
                 <a className="panel-btn" onClick={props.onStop}>
-                    Stop
+                    Stop All
                 </a>
                 <a className="panel-btn" onClick={props.onRunPending}>
-                    Run pending
+                    Run Pending
                 </a>
                 <a className="panel-btn" onClick={props.onRunAll}>
-                    Run all
+                    Run All
                 </a>
             </div>
         </div>

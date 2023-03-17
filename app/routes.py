@@ -93,9 +93,12 @@ class DownloadJob(Resource):
 class ClearJobs(Resource):
     
     @jwt_required()
-    def get(self):
+    def post(self):
+        content = request.json
+        jobs = content['jobs']
+        
         uid = get_jwt_identity()
-        filing.clear_jobs(uid)
+        filing.clear_jobs(uid, jobs)
 
 class PauseJobs(Resource):
     

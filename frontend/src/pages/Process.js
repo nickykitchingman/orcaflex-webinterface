@@ -196,7 +196,9 @@ const Process = (props) => {
         fetch(
             api_url('/clearjobs'),
             {
-                headers: { 'Authorization': `Bearer ${props.getToken()}` }
+				method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${props.getToken()}` },
+				body: JSON.stringify({ 'jobs': jobs.filter(job => job.status != JobStatus.Running).map(job => job.id) })
             }
         ).then(
             response => {
@@ -244,6 +246,7 @@ const Process = (props) => {
     
     const stopJobs = () => {    
         let jobIds = runningJobs().map(job => job.id);
+		
         if (jobs.length == 0) {
             return;
         }
@@ -271,7 +274,7 @@ const Process = (props) => {
     const displayJob = job => (
         <tr key={job.id}>
             <td className="process-col" colSpan={job.status==JobStatus.Complete?"1":"2"}>
-                <ProcessButton onClick={() => processJob(job.id)} job={job}/>
+                <ProcessButton resetJobs={resetJobs} getToken={props.getToken} setToken={props.setToken} onClick={() => processJob(job.id)} job={job}/>
             </td>
             {job.status == JobStatus.Complete &&
             (<td className="download-col">
@@ -287,6 +290,10 @@ const Process = (props) => {
 		
 		return null;
 	}
+	
+	const resetJobs = () => {
+		fetchJobs();
+	};
 	
     const displayJobs = (<table><tbody>{jobs.map((job) => displayJob(job))}</tbody></table>);
     
