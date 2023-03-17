@@ -37,13 +37,7 @@ def save_files(files, user_id):
     for file in files:
         if file and valid_file(file.filename):
             filename = secure_filename(file.filename)
-            user_path = os.path.join(LOAD_PATH, str(user_id))
-            
-            if not os.path.exists(user_path):
-                os.mkdir(user_path)
-            
-            path = os.path.join(user_path, filename)
-            
+            path = os.path.join(LOAD_PATH, filename)
             file.save(path)
             filenames.append(filename)
 
@@ -86,12 +80,10 @@ def get_all_jobs_json(uid_filter = -1):
     
 def get_sim_path(job_id):
     job = db.session.get(Job, job_id)
-    
     if job is None or job.status != JobStatus.Complete:
         return None
-        
-    path = os.path.join(os.path.join(filing.SAVE_PATH, job.user_id), job.sim_filename())
     
+    path = os.path.join(SAVE_PATH, job.sim_filename())
     return path, job.sim_filename()
 
 def clear_jobs(uid):
@@ -101,9 +93,8 @@ def clear_jobs(uid):
     
         # Check if a duplicate job uses this filename
         if Job.query.filter(Job.id != job.id, Job.filename == job.filename).first() is None:
-            load_file = os.path.join(os.path.join(filing.LOAD_PATH, job.user_id), job.full_filename())
-            save_file = os.path.join(os.path.join(filing.SAVE_PATH, job.user_id), job.sim_filename())
-            
+            load_file = os.path.join(LOAD_PATH, job.full_filename())
+            save_file = os.path.join(SAVE_PATH, job.sim_filename())
             try:
                 if job.filename != '':
                     os.remove(load_file)
