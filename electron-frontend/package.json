@@ -1,0 +1,14 @@
+{
+  "name": "orcaflex-electron",
+  "version": "1.0.0",
+  "description": "Electron based application to interact with the OrcaFlex web interface",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Ianto Pettitt",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^23.1.4"
+  }
+}
